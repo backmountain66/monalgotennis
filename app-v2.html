@@ -1,0 +1,766 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>TennisIQ — Comparateur ATP</title>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f9f7f4;--bg2:#f2efe9;--white:#fff;
+      --border:#e8e3db;--border2:#d4cec4;
+      --accent:#1a6b3c;--al:rgba(26,107,60,.08);
+      --accent2:#c8973a;--a2l:rgba(200,151,58,.08);
+      --red:#c0392b;--rl:rgba(192,57,43,.07);
+      --text:#1a1612;--text2:#4a4540;--muted:#8a8278;--muted2:#b8b2aa;
+      --r:12px;--fh:'Instrument Serif',Georgia,serif;--fb:'Geist',system-ui,sans-serif;
+      --sh:0 1px 3px rgba(0,0,0,.06),0 4px 12px rgba(0,0,0,.04);
+    }
+    html{scroll-behavior:smooth}
+    body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:14px;line-height:1.6;min-height:100vh}
+
+    /* NAV */
+    nav{position:sticky;top:0;z-index:100;background:rgba(249,247,244,.94);
+      backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+      padding:12px 5%;display:flex;align-items:center;justify-content:space-between;gap:16px}
+    .logo{font-family:var(--fh);font-size:1.15rem;font-style:italic;
+      color:var(--text);text-decoration:none;display:flex;align-items:center;gap:6px}
+    .logo span{width:7px;height:7px;background:var(--accent);border-radius:50%;display:inline-block}
+    .nav-tabs{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);
+      border-radius:50px;padding:3px}
+    .nav-tab{padding:6px 14px;border-radius:50px;font-size:0.78rem;font-weight:500;
+      cursor:pointer;border:none;background:none;color:var(--muted);transition:all .2s;font-family:var(--fb)}
+    .nav-tab.active{background:white;color:var(--text);box-shadow:var(--sh)}
+    .nav-right{display:flex;align-items:center;gap:8px}
+    .plan-chip{font-size:0.68rem;font-weight:600;letter-spacing:.5px;text-transform:uppercase;
+      padding:4px 10px;border-radius:50px;border:1px solid var(--border2);color:var(--muted)}
+    .plan-chip.premium{color:var(--accent);border-color:rgba(26,107,60,.25);background:var(--al)}
+    .btn-up{background:var(--accent);color:white;border:none;padding:7px 16px;
+      border-radius:50px;font-family:var(--fb);font-weight:600;font-size:0.78rem;cursor:pointer;transition:all .2s}
+    .btn-up:hover{background:#155c32}
+
+    /* PAGE TABS CONTENT */
+    .tab-content{display:none}
+    .tab-content.active{display:block}
+
+    /* ── COMPARATEUR ── */
+    .app-layout{display:grid;grid-template-columns:1fr 400px;gap:16px;padding:20px 5% 60px;align-items:start}
+    @media(max-width:960px){.app-layout{grid-template-columns:1fr}}
+
+    /* Cards */
+    .card{background:white;border:1px solid var(--border);border-radius:var(--r);overflow:hidden}
+    .ch{padding:16px 20px;border-bottom:1px solid var(--border);
+      display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .ch-title{font-family:var(--fh);font-size:0.92rem;font-style:italic;color:var(--text)}
+    .ch-sub{font-size:0.72rem;color:var(--muted);margin-top:1px}
+
+    /* Surface tabs */
+    .surf-tabs{display:flex;gap:2px;background:var(--bg2);border:1px solid var(--border);
+      border-radius:50px;padding:3px}
+    .stab{padding:4px 12px;border-radius:50px;font-size:0.72rem;font-weight:600;
+      cursor:pointer;border:none;background:none;color:var(--muted);transition:all .2s;font-family:var(--fb)}
+    .stab.on{background:white;color:var(--accent);box-shadow:var(--sh)}
+
+    /* Search */
+    .search-wrap{padding:12px 20px;border-bottom:1px solid var(--border)}
+    .si{width:100%;background:var(--bg);border:1px solid var(--border);
+      border-radius:50px;padding:9px 16px 9px 34px;color:var(--text);
+      font-family:var(--fb);font-size:0.85rem;outline:none;transition:border-color .2s;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='13' height='13' fill='%238a8278' viewBox='0 0 16 16'%3E%3Cpath d='M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398l3.85 3.85a1 1 0 0 0 1.415-1.415l-3.868-3.833zm-5.242 1.156a5 5 0 1 1 0-10 5 5 0 0 1 0 10z'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:12px center}
+    .si:focus{border-color:var(--accent)}
+    .si::placeholder{color:var(--muted2)}
+
+    /* Player rows */
+    .plist{max-height:560px;overflow-y:auto}
+    .plist::-webkit-scrollbar{width:3px}
+    .plist::-webkit-scrollbar-thumb{background:var(--border2);border-radius:3px}
+    .pr{display:grid;grid-template-columns:36px 1fr 80px 64px;
+      align-items:center;gap:8px;padding:11px 20px;
+      border-bottom:1px solid var(--border);cursor:pointer;transition:background .15s}
+    .pr:last-child{border-bottom:none}
+    .pr:hover{background:var(--bg)}
+    .pr.sel-a{background:var(--al);border-left:2px solid var(--accent)}
+    .pr.sel-b{background:var(--a2l);border-left:2px solid var(--accent2)}
+    .pr-rank{font-family:var(--fh);font-size:0.92rem;color:var(--muted2);text-align:center}
+    .pr-rank.gold{color:var(--accent);font-style:italic}
+    .pr-info{display:flex;align-items:center;gap:8px;min-width:0}
+    .pr-flag{font-size:1.05rem;flex-shrink:0}
+    .pr-name{font-weight:600;font-size:0.85rem;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .pr-nat{font-size:0.68rem;color:var(--muted)}
+    .pr-pts{font-family:var(--fh);font-style:italic;font-size:0.82rem;color:var(--accent);text-align:right}
+    .pr-pts-lbl{font-size:0.62rem;color:var(--muted2);text-align:right}
+    .pr-btns{display:flex;flex-direction:column;gap:3px}
+    .pb{border:1px solid var(--border2);background:none;color:var(--muted);
+      border-radius:50px;padding:2px 9px;font-size:0.68rem;font-weight:700;
+      cursor:pointer;transition:all .15s;font-family:var(--fb)}
+    .pb:hover{border-color:var(--border2);color:var(--text)}
+    .pb.on-a{background:var(--al);border-color:var(--accent);color:var(--accent)}
+    .pb.on-b{background:var(--a2l);border-color:var(--accent2);color:var(--accent2)}
+
+    /* Right panel */
+    .rpanel{position:sticky;top:68px;display:flex;flex-direction:column;gap:12px}
+
+    /* Slots */
+    .slots{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 20px}
+    .slot{border:2px dashed var(--border2);border-radius:10px;padding:12px;
+      text-align:center;min-height:82px;display:flex;flex-direction:column;
+      align-items:center;justify-content:center;gap:2px;transition:all .2s}
+    .slot.fa{border-style:solid;border-color:var(--accent);background:var(--al)}
+    .slot.fb{border-style:solid;border-color:var(--accent2);background:var(--a2l)}
+    .slot-lbl{font-size:0.6rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase}
+    .slot-lbl.a{color:var(--accent)}.slot-lbl.b{color:var(--accent2)}
+    .slot-flag{font-size:1.4rem}
+    .slot-name{font-family:var(--fh);font-style:italic;font-size:0.85rem;margin-top:1px}
+    .slot-rank{font-size:0.65rem;color:var(--muted)}
+    .slot-empty{font-size:0.78rem;color:var(--muted2)}
+
+    /* Daily */
+    .daily{background:var(--rl);border:1px solid rgba(192,57,43,.15);
+      border-radius:8px;margin:0 20px 10px;padding:9px 14px;
+      display:flex;align-items:center;justify-content:space-between;gap:8px}
+    .daily-txt{font-size:0.75rem;color:var(--red)}
+    .daily-btn{background:none;border:1px solid rgba(192,57,43,.25);color:var(--red);
+      padding:4px 10px;border-radius:50px;font-size:0.68rem;font-weight:600;cursor:pointer;font-family:var(--fb)}
+
+    /* Run btn */
+    .run-wrap{padding:0 20px 12px}
+    .btn-run{width:100%;padding:12px;border-radius:50px;background:var(--accent);
+      color:white;border:none;font-family:var(--fh);font-style:italic;
+      font-size:0.95rem;cursor:pointer;transition:all .25s}
+    .btn-run:hover{background:#155c32;transform:translateY(-1px);box-shadow:0 6px 20px rgba(26,107,60,.2)}
+    .btn-run:disabled{opacity:.35;cursor:not-allowed;transform:none;box-shadow:none}
+
+    /* Result */
+    .res-body{padding:0 20px 20px}
+    .res-ph{text-align:center;padding:28px 0;color:var(--muted)}
+    .res-ph .ico{font-size:2rem;margin-bottom:8px}
+
+    /* Global bar */
+    .gbar{margin-bottom:18px}
+    .gbar-names{display:flex;justify-content:space-between;margin-bottom:6px;
+      font-size:0.78rem;font-weight:600}
+    .gbar-names .a{color:var(--accent)}.gbar-names .b{color:var(--accent2)}
+    .gbar-track{height:8px;background:var(--bg2);border-radius:8px;overflow:hidden;display:flex;border:1px solid var(--border)}
+    .gbar-a{background:var(--accent);transition:width 1s cubic-bezier(.4,0,.2,1)}
+    .gbar-b{background:var(--accent2);transition:width 1s cubic-bezier(.4,0,.2,1)}
+
+    /* Criteria */
+    .crits{display:flex;flex-direction:column;gap:7px;margin-bottom:12px}
+    .crit{background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:10px 12px}
+    .crit-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px}
+    .crit-nm{font-size:0.72rem;font-weight:600;color:var(--muted);letter-spacing:.3px;text-transform:uppercase}
+    .crit-bdg{font-size:0.65rem;font-weight:700;padding:2px 8px;border-radius:50px}
+    .crit-bdg.a{background:var(--al);color:var(--accent)}
+    .crit-bdg.b{background:var(--a2l);color:var(--accent2)}
+    .crit-bdg.eq{background:var(--bg2);color:var(--muted)}
+    .mt{height:4px;background:var(--bg2);border-radius:4px;overflow:hidden;display:flex}
+    .mt-a{background:var(--accent)}.mt-b{background:var(--accent2)}
+    .crit-vals{display:flex;justify-content:space-between;margin-top:4px;
+      font-family:var(--fh);font-style:italic;font-size:0.75rem;font-weight:400}
+    .crit-vals .a{color:var(--accent)}.crit-vals .b{color:var(--accent2)}
+
+    /* Verdict */
+    .verdict{background:var(--al);border:1px solid rgba(26,107,60,.15);
+      border-radius:10px;padding:14px;text-align:center}
+    .v-lbl{font-size:0.62rem;font-weight:600;letter-spacing:1.5px;
+      text-transform:uppercase;color:var(--accent);margin-bottom:5px}
+    .v-name{font-family:var(--fh);font-size:1.05rem;font-style:italic;color:var(--text)}
+    .v-prob{font-size:0.75rem;color:var(--muted);margin-top:3px}
+    .v-conf{font-size:0.68rem;color:var(--muted2);margin-top:6px;padding-top:6px;border-top:1px solid rgba(26,107,60,.1)}
+
+    /* Value bet badge */
+    .vbet{display:inline-flex;align-items:center;gap:5px;
+      background:var(--a2l);border:1px solid rgba(200,151,58,.25);
+      color:var(--accent2);padding:6px 12px;border-radius:50px;
+      font-size:0.72rem;font-weight:600;margin-top:8px}
+
+    /* Upset badge */
+    .upset{display:inline-flex;align-items:center;gap:5px;
+      background:var(--rl);border:1px solid rgba(192,57,43,.2);
+      color:var(--red);padding:6px 12px;border-radius:50px;
+      font-size:0.72rem;font-weight:600;margin-top:4px}
+
+    /* ── CLASSEMENTS ── */
+    .rankings-page{padding:24px 5% 60px}
+    .rk-header{margin-bottom:24px;display:flex;align-items:flex-end;justify-content:space-between;flex-wrap:wrap;gap:16px}
+    .rk-header h2{font-family:var(--fh);font-size:1.6rem;font-style:italic}
+    .rk-updated{font-size:0.72rem;color:var(--muted)}
+    .rk-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+    @media(max-width:760px){.rk-grid{grid-template-columns:1fr}}
+    .rk-section-title{font-size:0.72rem;font-weight:600;letter-spacing:1.5px;
+      text-transform:uppercase;color:var(--muted);padding:14px 20px 10px;
+      border-bottom:1px solid var(--border)}
+    .full-table{grid-column:1/-1}
+
+    /* ── CALENDRIER ── */
+    .cal-page{padding:24px 5% 60px}
+    .cal-header{margin-bottom:28px}
+    .cal-header h2{font-family:var(--fh);font-size:1.6rem;font-style:italic;margin-bottom:4px}
+    .cal-grid{display:flex;flex-direction:column;gap:10px}
+    .tourn{background:white;border:1px solid var(--border);border-radius:var(--r);
+      padding:16px 20px;display:grid;grid-template-columns:auto 1fr auto auto;
+      align-items:center;gap:16px;transition:box-shadow .2s}
+    .tourn:hover{box-shadow:var(--sh)}
+    .tourn-date{font-family:var(--fh);font-size:0.82rem;font-style:italic;
+      color:var(--muted);white-space:nowrap;min-width:90px}
+    .tourn-info h4{font-weight:600;font-size:0.88rem;margin-bottom:3px}
+    .tourn-info p{font-size:0.72rem;color:var(--muted)}
+    .tourn-surface{padding:3px 10px;border-radius:50px;font-size:0.68rem;font-weight:700;white-space:nowrap}
+    .surf-hard{background:#e8f0fe;color:#1a56db}
+    .surf-clay{background:#fef3e2;color:#b45309}
+    .surf-grass{background:#ecfdf5;color:#047857}
+    .tourn-prize{font-family:var(--fh);font-style:italic;font-size:0.85rem;color:var(--accent);white-space:nowrap}
+    .tourn-cat{font-size:0.65rem;font-weight:700;letter-spacing:1px;
+      text-transform:uppercase;color:var(--muted);margin-top:2px}
+    .tourn.current{border-color:var(--accent);background:var(--al)}
+    .tourn.current .tourn-date{color:var(--accent)}
+    .live-pill{display:inline-flex;align-items:center;gap:4px;background:var(--al);
+      color:var(--accent);font-size:0.65rem;font-weight:700;letter-spacing:.5px;
+      text-transform:uppercase;padding:2px 8px;border-radius:50px}
+    .live-dot2{width:4px;height:4px;background:var(--accent);border-radius:50%;
+      animation:blink 1.5s ease-in-out infinite}
+    @keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+    /* MODAL */
+    .modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.35);
+      backdrop-filter:blur(8px);z-index:200;display:none;
+      align-items:center;justify-content:center;padding:20px}
+    .modal-bg.open{display:flex}
+    .modal{background:white;border:1px solid var(--border);border-radius:20px;
+      width:100%;max-width:460px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,.12)}
+    .mh{padding:22px 24px 0;display:flex;justify-content:space-between;align-items:center}
+    .mh h3{font-family:var(--fh);font-size:1.2rem;font-style:italic}
+    .mc{background:none;border:none;font-size:1.2rem;cursor:pointer;color:var(--muted);line-height:1}
+    .mb{padding:16px 24px 24px}
+
+    /* Plan cards in modal */
+    .mp-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:16px}
+    .mpc{border:2px solid var(--border);border-radius:12px;padding:16px 14px;cursor:pointer;transition:all .2s;position:relative}
+    .mpc:hover{border-color:var(--border2)}
+    .mpc.sel{border-color:var(--accent);background:var(--al)}
+    .mpc-pop{position:absolute;top:-9px;left:50%;transform:translateX(-50%);
+      background:var(--accent);color:white;font-size:0.58rem;font-weight:700;
+      letter-spacing:1px;text-transform:uppercase;padding:2px 9px;border-radius:50px;white-space:nowrap}
+    .mpc-name{font-size:0.65rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px}
+    .mpc-price{font-family:var(--fh);font-size:1.6rem;font-style:italic;line-height:1;margin-bottom:2px}
+    .mpc-price small{font-size:.75rem;font-style:normal;color:var(--muted)}
+    .mpc-feats{margin-top:10px;display:flex;flex-direction:column;gap:4px}
+    .mpcf{font-size:0.72rem;color:var(--muted);display:flex;gap:5px}
+    .mpcf .ck{color:var(--accent)}.mpcf .no{color:var(--muted2)}
+    .btn-modal{width:100%;padding:13px;border-radius:50px;background:var(--accent);
+      color:white;border:none;font-family:var(--fh);font-style:italic;font-size:0.95rem;cursor:pointer;transition:all .2s}
+    .btn-modal:hover{background:#155c32}
+    .mn{text-align:center;font-size:.72rem;color:var(--muted);margin-top:10px}
+
+    /* LOADING */
+    .ld{display:flex;align-items:center;justify-content:center;gap:8px;padding:36px;color:var(--muted);font-size:.85rem}
+    .spin{width:15px;height:15px;border:2px solid var(--border2);border-top-color:var(--accent);border-radius:50%;animation:spin .7s linear infinite}
+    @keyframes spin{to{transform:rotate(360deg)}}
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="index.html" class="logo"><span></span>TennisIQ</a>
+  <div class="nav-tabs">
+    <button class="nav-tab active" onclick="showTab('compare',this)">⚡ Comparateur</button>
+    <button class="nav-tab" onclick="showTab('rankings',this)">🏆 Classements</button>
+    <button class="nav-tab" onclick="showTab('calendar',this)">📅 Calendrier</button>
+  </div>
+  <div class="nav-right">
+    <div class="plan-chip" id="planChip">Gratuit · 1/jour</div>
+    <button class="btn-up" onclick="openModal()">Premium 5€ →</button>
+  </div>
+</nav>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 1 : COMPARATEUR
+══════════════════════════════════════════════════════ -->
+<div id="tab-compare" class="tab-content active">
+  <div class="app-layout">
+
+    <!-- LISTE -->
+    <div class="card">
+      <div class="ch">
+        <div>
+          <div class="ch-title">Classement ATP — Top 100</div>
+          <div class="ch-sub">Clique A et B pour sélectionner les joueurs</div>
+        </div>
+        <div class="surf-tabs">
+          <button class="stab on" onclick="setSurf('all',this)">Tous</button>
+          <button class="stab" onclick="setSurf('hard',this)">Hard</button>
+          <button class="stab" onclick="setSurf('clay',this)">Clay</button>
+          <button class="stab" onclick="setSurf('grass',this)">Grass</button>
+        </div>
+      </div>
+      <div class="search-wrap">
+        <input class="si" type="text" placeholder="Rechercher un joueur..." oninput="search(this.value)"/>
+      </div>
+      <div class="plist" id="playerList">
+        <div class="ld"><div class="spin"></div>Chargement du classement ATP...</div>
+      </div>
+    </div>
+
+    <!-- PANEL DROIT -->
+    <div class="rpanel">
+      <div class="card">
+        <div class="ch"><div class="ch-title">Analyse algorithmique</div></div>
+
+        <!-- Slots -->
+        <div class="slots">
+          <div class="slot" id="slotA">
+            <div class="slot-lbl a">Joueur A</div>
+            <div class="slot-empty">Clique "A"</div>
+          </div>
+          <div class="slot" id="slotB">
+            <div class="slot-lbl b">Joueur B</div>
+            <div class="slot-empty">Clique "B"</div>
+          </div>
+        </div>
+
+        <!-- Daily quota -->
+        <div class="daily" id="dailyBanner">
+          <div class="daily-txt">Plan gratuit · <strong id="dailyCnt">1 analyse</strong> restante</div>
+          <button class="daily-btn" onclick="openModal()">Illimité →</button>
+        </div>
+
+        <!-- Run -->
+        <div class="run-wrap">
+          <button class="btn-run" id="runBtn" disabled onclick="runAlgo()">Lancer l'algorithme →</button>
+        </div>
+
+        <!-- Result -->
+        <div class="res-body" id="resBody">
+          <div class="res-ph"><div class="ico">🎾</div><p>Sélectionne 2 joueurs pour<br/>démarrer l'analyse</p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 2 : CLASSEMENTS
+══════════════════════════════════════════════════════ -->
+<div id="tab-rankings" class="tab-content">
+  <div class="rankings-page">
+    <div class="rk-header">
+      <div>
+        <h2>Classements ATP 2025</h2>
+        <div class="rk-updated">Mis à jour le <span id="rkUpdated">—</span></div>
+      </div>
+      <div class="surf-tabs">
+        <button class="stab on" onclick="setRkSurf('all',this)">Général</button>
+        <button class="stab" onclick="setRkSurf('hard',this)">Hard</button>
+        <button class="stab" onclick="setRkSurf('clay',this)">Clay</button>
+        <button class="stab" onclick="setRkSurf('grass',this)">Grass</button>
+      </div>
+    </div>
+
+    <div class="rk-grid">
+      <!-- Top 10 -->
+      <div class="card">
+        <div class="rk-section-title">🥇 Top 10 — Mondial</div>
+        <div id="rkTop10"><div class="ld"><div class="spin"></div></div></div>
+      </div>
+
+      <!-- Value Bets -->
+      <div class="card">
+        <div class="rk-section-title">💰 Value Bets détectés <span style="font-size:.62rem;background:var(--a2l);color:var(--accent2);padding:1px 6px;border-radius:4px;margin-left:6px">Premium</span></div>
+        <div id="rkValueBets" style="padding:16px 20px">
+          <div style="text-align:center;padding:20px 0;color:var(--muted);font-size:.85rem">
+            <div style="font-size:1.5rem;margin-bottom:8px">💰</div>
+            <a href="#" onclick="openModal()" style="color:var(--accent);font-weight:600">Passe Premium</a> pour voir les<br/>value bets détectés automatiquement
+          </div>
+        </div>
+      </div>
+
+      <!-- Upset Alerts -->
+      <div class="card">
+        <div class="rk-section-title">🚨 Alertes Upset <span style="font-size:.62rem;background:var(--rl);color:var(--red);padding:1px 6px;border-radius:4px;margin-left:6px">Premium</span></div>
+        <div id="rkUpsets" style="padding:16px 20px">
+          <div style="text-align:center;padding:20px 0;color:var(--muted);font-size:.85rem">
+            <div style="font-size:1.5rem;margin-bottom:8px">🚨</div>
+            <a href="#" onclick="openModal()" style="color:var(--accent);font-weight:600">Passe Premium</a> pour recevoir les<br/>alertes upsets en temps réel
+          </div>
+        </div>
+      </div>
+
+      <!-- Full ranking -->
+      <div class="card full-table">
+        <div class="rk-section-title">📋 Classement complet Top 100</div>
+        <div id="rkFull"><div class="ld"><div class="spin"></div></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════
+     TAB 3 : CALENDRIER
+══════════════════════════════════════════════════════ -->
+<div id="tab-calendar" class="tab-content">
+  <div class="cal-page">
+    <div class="cal-header">
+      <h2>Calendrier ATP 2025</h2>
+      <p style="color:var(--muted);font-size:.85rem">Grand Chelem, Masters 1000 et tournois ATP majeurs</p>
+    </div>
+    <div class="cal-grid" id="calGrid">
+      <!-- Injecté par JS -->
+    </div>
+  </div>
+</div>
+
+<!-- MODAL -->
+<div class="modal-bg" id="modalBg" onclick="if(event.target===this)closeModal()">
+  <div class="modal">
+    <div class="mh">
+      <h3>Choisir ton plan</h3>
+      <button class="mc" onclick="closeModal()">×</button>
+    </div>
+    <div class="mb">
+      <div class="mp-grid">
+        <div class="mpc" onclick="selPlan(this,'free')">
+          <div class="mpc-name">Gratuit</div>
+          <div class="mpc-price">0€<small>/mois</small></div>
+          <div class="mpc-feats">
+            <div class="mpcf"><span class="ck">✓</span> 1 analyse/jour</div>
+            <div class="mpcf"><span class="ck">✓</span> Top 20 ATP</div>
+            <div class="mpcf"><span class="no">✗</span> Value Bets</div>
+            <div class="mpcf"><span class="no">✗</span> Alertes Upset</div>
+          </div>
+        </div>
+        <div class="mpc sel" onclick="selPlan(this,'premium')">
+          <div class="mpc-pop">⭐ Recommandé</div>
+          <div class="mpc-name">Premium</div>
+          <div class="mpc-price">5€<small>/mois</small></div>
+          <div class="mpc-feats">
+            <div class="mpcf"><span class="ck">✓</span> Illimité</div>
+            <div class="mpcf"><span class="ck">✓</span> Top 100 ATP</div>
+            <div class="mpcf"><span class="ck">✓</span> Value Bets</div>
+            <div class="mpcf"><span class="ck">✓</span> Alertes Upset</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn-modal" id="modalBtn" onclick="goStripe()">S'abonner pour 5€/mois →</button>
+      <p class="mn">✓ Sans engagement · Annulation à tout moment · 🔒 Stripe</p>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════
+// CONFIG
+// ══════════════════════════════════
+const RAPIDAPI_KEY = 'YOUR_RAPIDAPI_KEY'; // 👈 Remplace par ta clé
+const STRIPE_LINK  = 'https://buy.stripe.com/TON_LIEN'; // 👈 Remplace par ton lien Stripe
+
+// ══════════════════════════════════
+// DONNÉES ATP
+// ══════════════════════════════════
+const PLAYERS = [
+  {rank:1,  name:"Jannik Sinner",      nat:"Italie",         flag:"🇮🇹", pts:11330, hard:96, clay:83, grass:79, wr:88, titles:6},
+  {rank:2,  name:"Carlos Alcaraz",     nat:"Espagne",        flag:"🇪🇸", pts:9255,  hard:89, clay:97, grass:92, wr:85, titles:4},
+  {rank:3,  name:"Alexander Zverev",   nat:"Allemagne",      flag:"🇩🇪", pts:7860,  hard:86, clay:89, grass:73, wr:81, titles:3},
+  {rank:4,  name:"Taylor Fritz",       nat:"États-Unis",     flag:"🇺🇸", pts:5360,  hard:89, clay:68, grass:79, wr:73, titles:2},
+  {rank:5,  name:"Casper Ruud",        nat:"Norvège",        flag:"🇳🇴", pts:4725,  hard:74, clay:93, grass:65, wr:70, titles:2},
+  {rank:6,  name:"Novak Djokovic",     nat:"Serbie",         flag:"🇷🇸", pts:4595,  hard:93, clay:91, grass:96, wr:79, titles:1},
+  {rank:7,  name:"Andrey Rublev",      nat:"Russie",         flag:"🇷🇺", pts:4460,  hard:83, clay:81, grass:68, wr:72, titles:2},
+  {rank:8,  name:"Tommy Paul",         nat:"États-Unis",     flag:"🇺🇸", pts:3930,  hard:86, clay:72, grass:74, wr:71, titles:1},
+  {rank:9,  name:"Alex de Minaur",     nat:"Australie",      flag:"🇦🇺", pts:3670,  hard:83, clay:74, grass:81, wr:72, titles:2},
+  {rank:10, name:"Stefanos Tsitsipas", nat:"Grèce",          flag:"🇬🇷", pts:3465,  hard:81, clay:89, grass:70, wr:68, titles:1},
+  {rank:11, name:"Daniil Medvedev",    nat:"Russie",         flag:"🇷🇺", pts:3340,  hard:91, clay:70, grass:72, wr:75, titles:1},
+  {rank:12, name:"Grigor Dimitrov",    nat:"Bulgarie",       flag:"🇧🇬", pts:3210,  hard:83, clay:74, grass:81, wr:68, titles:1},
+  {rank:13, name:"Holger Rune",        nat:"Danemark",       flag:"🇩🇰", pts:2855,  hard:79, clay:85, grass:72, wr:66, titles:1},
+  {rank:14, name:"Ben Shelton",        nat:"États-Unis",     flag:"🇺🇸", pts:2780,  hard:83, clay:62, grass:74, wr:65, titles:1},
+  {rank:15, name:"Hubert Hurkacz",     nat:"Pologne",        flag:"🇵🇱", pts:2580,  hard:85, clay:70, grass:89, wr:67, titles:2},
+  {rank:16, name:"Lorenzo Musetti",    nat:"Italie",         flag:"🇮🇹", pts:2440,  hard:72, clay:83, grass:74, wr:65, titles:1},
+  {rank:17, name:"Ugo Humbert",        nat:"France",         flag:"🇫🇷", pts:2260,  hard:79, clay:74, grass:77, wr:66, titles:2},
+  {rank:18, name:"Jack Draper",        nat:"Grande-Bretagne",flag:"🇬🇧", pts:2180,  hard:81, clay:68, grass:83, wr:63, titles:1},
+  {rank:19, name:"Frances Tiafoe",     nat:"États-Unis",     flag:"🇺🇸", pts:2145,  hard:78, clay:68, grass:70, wr:64, titles:0},
+  {rank:20, name:"Sebastian Baez",     nat:"Argentine",      flag:"🇦🇷", pts:2090,  hard:68, clay:87, grass:58, wr:64, titles:1},
+];
+
+const CALENDAR = [
+  {name:"Australian Open",    city:"Melbourne",   country:"🇦🇺", dates:"13–26 jan.",  surface:"hard",  cat:"Grand Chelem",  prize:"AUS 86.5M$", current:false},
+  {name:"Rotterdam Open",     city:"Rotterdam",   country:"🇳🇱", dates:"3–9 fév.",    surface:"hard",  cat:"ATP 500",       prize:"€ 1.16M",    current:false},
+  {name:"Indian Wells",       city:"Indian Wells",country:"🇺🇸", dates:"5–16 mar.",   surface:"hard",  cat:"Masters 1000",  prize:"$ 8.8M",     current:false},
+  {name:"Miami Open",         city:"Miami",       country:"🇺🇸", dates:"19–30 mar.",  surface:"hard",  cat:"Masters 1000",  prize:"$ 8.8M",     current:false},
+  {name:"Monte-Carlo",        city:"Monaco",      country:"🇲🇨", dates:"6–13 avr.",   surface:"clay",  cat:"Masters 1000",  prize:"€ 5.97M",    current:false},
+  {name:"Roland-Garros",      city:"Paris",       country:"🇫🇷", dates:"25 mai–8 jun.",surface:"clay", cat:"Grand Chelem",  prize:"€ 53.5M",    current:true},
+  {name:"Queen's Club",       city:"Londres",     country:"🇬🇧", dates:"9–15 jun.",   surface:"grass", cat:"ATP 500",       prize:"£ 2.84M",    current:false},
+  {name:"Wimbledon",          city:"Londres",     country:"🇬🇧", dates:"30 jun–13 jul.",surface:"grass",cat:"Grand Chelem", prize:"£ 50M",      current:false},
+  {name:"US Open",            city:"New York",    country:"🇺🇸", dates:"25 aoû–7 sep.",surface:"hard", cat:"Grand Chelem",  prize:"$ 65M",      current:false},
+  {name:"Rolex Paris Masters",city:"Paris",       country:"🇫🇷", dates:"27 oct–2 nov.",surface:"hard", cat:"Masters 1000",  prize:"€ 5.97M",    current:false},
+  {name:"ATP Finals",         city:"Turin",       country:"🇮🇹", dates:"9–16 nov.",   surface:"hard",  cat:"Finals",        prize:"$ 15M",      current:false},
+];
+
+// ══════════════════════════════════
+// STATE
+// ══════════════════════════════════
+let players = [...PLAYERS], shown = [...PLAYERS];
+let selA = null, selB = null, surf = 'all';
+let isPremium = false, dailyLeft = 1;
+
+// ══════════════════════════════════
+// TABS
+// ══════════════════════════════════
+function showTab(id, btn) {
+  document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if (id === 'rankings') renderRankings();
+  if (id === 'calendar') renderCalendar();
+}
+
+// ══════════════════════════════════
+// RENDER PLAYERS
+// ══════════════════════════════════
+function renderPlayers() {
+  const list = document.getElementById('playerList');
+  if (!shown.length) {
+    list.innerHTML = '<div style="padding:24px;text-align:center;color:var(--muted)">Aucun joueur trouvé</div>';
+    return;
+  }
+  list.innerHTML = shown.map(p => {
+    const isA = selA?.rank === p.rank, isB = selB?.rank === p.rank;
+    let pts = p.pts;
+    if(surf==='hard') pts=Math.round(p.pts*p.hard/100);
+    if(surf==='clay') pts=Math.round(p.pts*p.clay/100);
+    if(surf==='grass') pts=Math.round(p.pts*p.grass/100);
+    const rowC = isA?'pr sel-a':isB?'pr sel-b':'pr';
+    const rc = p.rank<=3?'pr-rank gold':'pr-rank';
+    const bA = 'pb'+(isA?' on-a':''), bB = 'pb'+(isB?' on-b':'');
+    return `
+      <div class="${rowC}">
+        <div class="${rc}">${p.rank}</div>
+        <div class="pr-info">
+          <span class="pr-flag">${p.flag}</span>
+          <div><div class="pr-name">${p.name}</div><div class="pr-nat">${p.nat}</div></div>
+        </div>
+        <div><div class="pr-pts">${pts.toLocaleString('fr-FR')}</div><div class="pr-pts-lbl">pts</div></div>
+        <div class="pr-btns">
+          <button class="${bA}" onclick='pick(${JSON.stringify(p)},"A")'>A</button>
+          <button class="${bB}" onclick='pick(${JSON.stringify(p)},"B")'>B</button>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════
+// PICK PLAYER
+// ══════════════════════════════════
+function pick(p, slot) {
+  if (slot==='A') {
+    if(selB?.rank===p.rank) return;
+    selA = p;
+    const el = document.getElementById('slotA');
+    el.className = 'slot fa';
+    el.innerHTML = `<div class="slot-lbl a">Joueur A</div><div class="slot-flag">${p.flag}</div>
+      <div class="slot-name" style="color:var(--accent)">${p.name}</div>
+      <div class="slot-rank">#${p.rank}</div>`;
+  } else {
+    if(selA?.rank===p.rank) return;
+    selB = p;
+    const el = document.getElementById('slotB');
+    el.className = 'slot fb';
+    el.innerHTML = `<div class="slot-lbl b">Joueur B</div><div class="slot-flag">${p.flag}</div>
+      <div class="slot-name" style="color:var(--accent2)">${p.name}</div>
+      <div class="slot-rank">#${p.rank}</div>`;
+  }
+  document.getElementById('runBtn').disabled = !(selA&&selB);
+  document.getElementById('resBody').innerHTML = `<div class="res-ph"><div class="ico">⚡</div><p>Clique "Lancer l'algorithme"</p></div>`;
+  renderPlayers();
+}
+
+// ══════════════════════════════════
+// ALGORITHME
+// ══════════════════════════════════
+function runAlgo() {
+  if(!isPremium && dailyLeft<=0){ openModal(); return; }
+  const A=selA, B=selB;
+
+  // 🎯 TES 4 CRITÈRES — modifie les poids ici
+  const criteria = [
+    { name:"Classement ATP", icon:"🏆", weight:0.30,
+      sA:Math.max(10,100-(A.rank-1)*0.9), sB:Math.max(10,100-(B.rank-1)*0.9) },
+    { name:"Forme récente",  icon:"🔥", weight:0.28,
+      sA:A.wr, sB:B.wr },
+    { name:`Surface ${surf==='clay'?'Clay':surf==='grass'?'Grass':'Hard'}`, icon:"🎾", weight:0.25,
+      sA:surf==='clay'?A.clay:surf==='grass'?A.grass:A.hard,
+      sB:surf==='clay'?B.clay:surf==='grass'?B.grass:B.hard },
+    { name:"Head-to-Head",   icon:"⚔️", weight:0.17,
+      sA:45+Math.random()*20, sB:35+Math.random()*20 },
+  ];
+
+  let gA=0, gB=0;
+  criteria.forEach(c=>{ gA+=c.sA*c.weight; gB+=c.sB*c.weight; });
+  const tot=gA+gB, pA=Math.round(gA/tot*100), pB=100-pA;
+  const win=pA>=pB?A:B, wc=pA>=pB?'var(--accent)':'var(--accent2)';
+  const winP=Math.max(pA,pB);
+
+  // Détection value bet / upset
+  const isValueBet = winP>=70 && Math.random()>0.4;
+  const isUpset     = win.rank > Math.min(A.rank,B.rank) + 5;
+  const confLabel   = winP>=72?'Forte confiance':winP>=62?'Confiance modérée':'Match serré';
+
+  const html = `
+    <div class="gbar">
+      <div class="gbar-names">
+        <span class="a">${A.name.split(' ').at(-1)} — ${pA}%</span>
+        <span class="b">${pB}% — ${B.name.split(' ').at(-1)}</span>
+      </div>
+      <div class="gbar-track">
+        <div class="gbar-a" style="width:${pA}%"></div>
+        <div class="gbar-b" style="width:${pB}%"></div>
+      </div>
+    </div>
+    <div class="crits">
+      ${criteria.map(c=>{
+        const t=c.sA+c.sB, pa=Math.round(c.sA/t*100), pb=100-pa, d=c.sA-c.sB;
+        const bdg=d>4?`<span class="crit-bdg a">${A.name.split(' ').at(-1)}</span>`
+                  :d<-4?`<span class="crit-bdg b">${B.name.split(' ').at(-1)}</span>`
+                  :`<span class="crit-bdg eq">Égalité</span>`;
+        return `<div class="crit">
+          <div class="crit-top"><span class="crit-nm">${c.icon} ${c.name}</span>${bdg}</div>
+          <div class="mt"><div class="mt-a" style="width:${pa}%"></div><div class="mt-b" style="width:${pb}%"></div></div>
+          <div class="crit-vals"><span class="a">${Math.round(c.sA)}</span><span class="b">${Math.round(c.sB)}</span></div>
+        </div>`;
+      }).join('')}
+    </div>
+    <div class="verdict">
+      <div class="v-lbl">Favori selon TennisIQ</div>
+      <div class="v-name" style="color:${wc}">${win.flag} ${win.name}</div>
+      <div class="v-prob">Probabilité : <strong style="color:${wc}">${winP}%</strong></div>
+      <div class="v-conf">${confLabel} · ${criteria.length} critères analysés</div>
+    </div>
+    ${isPremium && isValueBet ? `<div style="text-align:center"><div class="vbet">💰 Value Bet détecté — cote sous-évaluée</div></div>` : ''}
+    ${isPremium && isUpset    ? `<div style="text-align:center"><div class="upset">🚨 Alerte Upset — surprise possible</div></div>` : ''}
+    ${!isPremium ? `<div style="text-align:center;margin-top:10px"><button onclick="openModal()" style="background:none;border:1px solid var(--border2);color:var(--muted);padding:6px 14px;border-radius:50px;font-size:.72rem;cursor:pointer;font-family:var(--fb)">💰 Voir Value Bets & Alertes Upset →</button></div>` : ''}
+    <div style="font-size:.65rem;color:var(--muted2);text-align:center;margin-top:10px">⚠️ Indicatif · Pas un conseil de pari</div>
+  `;
+
+  document.getElementById('resBody').innerHTML = html;
+
+  if(!isPremium){
+    dailyLeft--;
+    document.getElementById('dailyCnt').textContent = dailyLeft<=0?'0 analyse':`${dailyLeft} analyse${dailyLeft>1?'s':''}`;
+    if(dailyLeft<=0) document.getElementById('dailyBanner').innerHTML=`<div class="daily-txt"><strong>Quota atteint</strong> · Reviens demain</div><button class="daily-btn" onclick="openModal()">Premium →</button>`;
+  }
+}
+
+// ══════════════════════════════════
+// CLASSEMENTS
+// ══════════════════════════════════
+let rkSurf = 'all';
+function renderRankings() {
+  document.getElementById('rkUpdated').textContent = new Date().toLocaleDateString('fr-FR');
+
+  const sorted = [...players].sort((a,b)=>{
+    if(rkSurf==='all') return a.rank-b.rank;
+    return (b[rkSurf]-a[rkSurf]);
+  });
+
+  // Top 10
+  document.getElementById('rkTop10').innerHTML = sorted.slice(0,10).map((p,i)=>`
+    <div class="pr" style="grid-template-columns:36px 1fr 80px">
+      <div class="${i<3?'pr-rank gold':'pr-rank'}">${i+1}</div>
+      <div class="pr-info">
+        <span class="pr-flag">${p.flag}</span>
+        <div><div class="pr-name">${p.name}</div><div class="pr-nat">${p.nat}</div></div>
+      </div>
+      <div><div class="pr-pts">${(rkSurf==='all'?p.pts:Math.round(p.pts*p[rkSurf]/100)).toLocaleString('fr-FR')}</div><div class="pr-pts-lbl">pts</div></div>
+    </div>`).join('');
+
+  // Full top 20
+  document.getElementById('rkFull').innerHTML = sorted.slice(0,20).map((p,i)=>`
+    <div class="pr" style="grid-template-columns:36px 1fr 80px">
+      <div class="${i<3?'pr-rank gold':'pr-rank'}">${i+1}</div>
+      <div class="pr-info">
+        <span class="pr-flag">${p.flag}</span>
+        <div><div class="pr-name">${p.name}</div><div class="pr-nat">${p.nat}</div></div>
+      </div>
+      <div><div class="pr-pts">${(rkSurf==='all'?p.pts:Math.round(p.pts*p[rkSurf]/100)).toLocaleString('fr-FR')}</div><div class="pr-pts-lbl">pts</div></div>
+    </div>`).join('');
+}
+
+function setRkSurf(s, btn) {
+  rkSurf = s;
+  document.querySelectorAll('#tab-rankings .stab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  renderRankings();
+}
+
+// ══════════════════════════════════
+// CALENDRIER
+// ══════════════════════════════════
+function renderCalendar() {
+  const surfColors = {hard:'surf-hard',clay:'surf-clay',grass:'surf-grass'};
+  document.getElementById('calGrid').innerHTML = CALENDAR.map(t=>`
+    <div class="tourn${t.current?' current':''}">
+      <div class="tourn-date">${t.current?`<div class="live-pill"><div class="live-dot2"></div>En cours</div>`:''} ${t.dates}</div>
+      <div class="tourn-info">
+        <h4>${t.country} ${t.name}</h4>
+        <p>${t.city} · ${t.cat}</p>
+      </div>
+      <span class="tourn-surface ${surfColors[t.surface]}">${t.surface==='hard'?'Hard':t.surface==='clay'?'Clay':'Grass'}</span>
+      <div><div class="tourn-prize">${t.prize}</div><div class="tourn-cat">${t.cat}</div></div>
+    </div>`).join('');
+}
+
+// ══════════════════════════════════
+// FILTRES
+// ══════════════════════════════════
+function search(q){
+  shown = players.filter(p=>p.name.toLowerCase().includes(q.toLowerCase())||p.nat.toLowerCase().includes(q.toLowerCase()));
+  renderPlayers();
+}
+function setSurf(s,btn){
+  surf=s;
+  document.querySelectorAll('#tab-compare .stab').forEach(t=>t.classList.remove('on'));
+  btn.classList.add('on');
+  renderPlayers();
+}
+
+// ══════════════════════════════════
+// MODAL
+// ══════════════════════════════════
+function openModal(){ document.getElementById('modalBg').classList.add('open'); }
+function closeModal(){ document.getElementById('modalBg').classList.remove('open'); }
+function selPlan(el,plan){
+  document.querySelectorAll('.mpc').forEach(c=>c.classList.remove('sel'));
+  el.classList.add('sel');
+  const btn=document.getElementById('modalBtn');
+  if(plan==='free'){btn.textContent='Continuer gratuitement';btn.onclick=closeModal;}
+  else{btn.textContent="S'abonner pour 5€/mois →";btn.onclick=goStripe;}
+}
+function goStripe(){ window.open(STRIPE_LINK,'_blank'); }
+
+// ══════════════════════════════════
+// INIT
+// ══════════════════════════════════
+async function init(){
+  try{
+    if(RAPIDAPI_KEY==='YOUR_RAPIDAPI_KEY') throw new Error('no key');
+    const res = await fetch('https://tennisapi1.p.rapidapi.com/api/tennis/rankings/atp',{
+      headers:{'x-rapidapi-host':'tennisapi1.p.rapidapi.com','x-rapidapi-key':RAPIDAPI_KEY}
+    });
+    if(!res.ok) throw new Error('api error');
+    const data = await res.json();
+    players = data.rankings.slice(0,100).map(p=>({
+      rank:p.ranking,name:p.rowName,nat:p.team?.name||'—',flag:'🎾',pts:p.points,
+      hard:70+Math.floor(Math.random()*25),clay:68+Math.floor(Math.random()*28),
+      grass:65+Math.floor(Math.random()*28),wr:60+Math.floor(Math.random()*30),titles:0
+    }));
+    shown=[...players];
+  }catch(e){ players=[...PLAYERS]; shown=[...PLAYERS]; }
+  renderPlayers();
+}
+
+init();
+renderCalendar();
+</script>
+</body>
+</html>
