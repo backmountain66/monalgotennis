@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guide Déploiement — GitHub + Netlify</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Mono:wght@400;500&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#040810;--surface:#080e18;--surface2:#0e1825;
+      --border:rgba(255,255,255,0.07);--accent:#00e5a0;--accent2:#00aeff;
+      --warn:#ff9f43;--error:#ff6b6b;
+      --text:#dde8f0;--muted:#4a6a80;--radius:12px;
+      --font-head:'Syne',sans-serif;
+      --font-body:'DM Sans',sans-serif;
+      --font-mono:'DM Mono',monospace;
+    }
+    body{background:var(--bg);color:var(--text);font-family:var(--font-body);
+      font-size:15px;line-height:1.7;max-width:880px;margin:0 auto;padding:40px 24px 80px}
+
+    /* HEADER */
+    .doc-header{margin-bottom:48px;padding-bottom:32px;border-bottom:1px solid var(--border)}
+    .doc-badge{display:inline-flex;align-items:center;gap:6px;
+      background:rgba(0,229,160,0.08);border:1px solid rgba(0,229,160,0.2);
+      color:var(--accent);padding:4px 12px;border-radius:50px;
+      font-size:0.7rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:16px}
+    h1{font-family:var(--font-head);font-size:2.4rem;font-weight:800;
+      letter-spacing:-1.5px;line-height:1.1;margin-bottom:12px}
+    h1 em{font-style:normal;background:linear-gradient(135deg,var(--accent),var(--accent2));
+      -webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .doc-meta{color:var(--muted);font-size:0.85rem;display:flex;gap:20px;flex-wrap:wrap}
+    .doc-meta span{display:flex;align-items:center;gap:5px}
+
+    /* TOC */
+    .toc{background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius);padding:20px 24px;margin-bottom:40px}
+    .toc-title{font-family:var(--font-head);font-size:0.75rem;font-weight:700;
+      letter-spacing:2px;text-transform:uppercase;color:var(--accent);margin-bottom:12px}
+    .toc ol{padding-left:20px;display:flex;flex-direction:column;gap:5px}
+    .toc a{color:var(--muted);text-decoration:none;font-size:0.88rem;transition:color .2s}
+    .toc a:hover{color:var(--accent)}
+
+    /* SECTIONS */
+    .section{margin-bottom:48px}
+    h2{font-family:var(--font-head);font-size:1.5rem;font-weight:800;
+      letter-spacing:-0.8px;margin-bottom:4px;display:flex;align-items:center;gap:10px}
+    .section-num{font-size:0.72rem;font-weight:700;letter-spacing:2px;
+      color:var(--accent);text-transform:uppercase;margin-bottom:8px}
+    h3{font-family:var(--font-head);font-size:1rem;font-weight:700;
+      margin:24px 0 10px;color:var(--text)}
+    p{color:var(--muted);margin-bottom:12px}
+    p strong{color:var(--text)}
+
+    /* STEPS */
+    .steps{display:flex;flex-direction:column;gap:0}
+    .step{display:grid;grid-template-columns:40px 1fr;gap:16px;padding:20px 0;
+      border-bottom:1px solid var(--border)}
+    .step:last-child{border-bottom:none}
+    .step-n{width:32px;height:32px;border-radius:50%;
+      background:var(--surface2);border:1px solid var(--border);
+      display:flex;align-items:center;justify-content:center;
+      font-family:var(--font-head);font-weight:800;font-size:0.8rem;
+      color:var(--accent);flex-shrink:0;margin-top:2px}
+    .step-content h4{font-family:var(--font-head);font-weight:700;margin-bottom:6px}
+    .step-content p{margin-bottom:8px}
+
+    /* CODE BLOCKS */
+    .code-block{background:var(--surface2);border:1px solid var(--border);
+      border-radius:10px;overflow:hidden;margin:10px 0}
+    .code-label{background:rgba(255,255,255,0.04);padding:7px 14px;
+      font-size:0.7rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+      color:var(--muted);border-bottom:1px solid var(--border);
+      display:flex;justify-content:space-between;align-items:center}
+    .copy-btn{background:none;border:none;color:var(--muted);cursor:pointer;
+      font-size:0.72rem;font-weight:600;padding:2px 8px;border-radius:4px;
+      transition:all .2s}
+    .copy-btn:hover{color:var(--accent);background:rgba(0,229,160,0.08)}
+    pre{padding:16px;overflow-x:auto;font-family:var(--font-mono);
+      font-size:0.82rem;line-height:1.7;color:#a8d8ea}
+    code{font-family:var(--font-mono);font-size:0.82rem;
+      background:var(--surface2);padding:2px 6px;border-radius:4px;color:var(--accent)}
+
+    /* CALLOUTS */
+    .callout{border-radius:10px;padding:14px 18px;margin:14px 0;
+      display:flex;gap:10px;align-items:flex-start;font-size:0.88rem}
+    .callout-icon{font-size:1rem;flex-shrink:0;margin-top:1px}
+    .callout.info{background:rgba(0,174,255,0.07);border:1px solid rgba(0,174,255,0.2)}
+    .callout.warn{background:rgba(255,159,67,0.07);border:1px solid rgba(255,159,67,0.2)}
+    .callout.success{background:rgba(0,229,160,0.07);border:1px solid rgba(0,229,160,0.2)}
+    .callout.info p,.callout.warn p,.callout.success p{margin:0;color:var(--text)}
+
+    /* FILE TREE */
+    .tree{background:var(--surface2);border:1px solid var(--border);
+      border-radius:10px;padding:16px 20px;font-family:var(--font-mono);
+      font-size:0.82rem;line-height:2}
+    .tree-folder{color:var(--accent2)}
+    .tree-file{color:var(--text)}
+    .tree-comment{color:var(--muted);font-style:italic}
+
+    /* API TABLE */
+    .api-table{width:100%;border-collapse:collapse;margin:16px 0}
+    .api-table th{text-align:left;padding:10px 14px;
+      background:var(--surface2);color:var(--muted);
+      font-size:0.75rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+      border-bottom:1px solid var(--border)}
+    .api-table td{padding:11px 14px;border-bottom:1px solid var(--border);
+      font-size:0.85rem;vertical-align:top}
+    .api-table tr:last-child td{border-bottom:none}
+    .badge{display:inline-block;padding:2px 8px;border-radius:50px;
+      font-size:0.68rem;font-weight:700;letter-spacing:.5px}
+    .badge.free{background:rgba(0,229,160,0.12);color:var(--accent)}
+    .badge.paid{background:rgba(255,159,67,0.12);color:var(--warn)}
+    .badge.rec{background:rgba(0,174,255,0.12);color:var(--accent2)}
+
+    /* ARCHITECTURE DIAGRAM */
+    .arch-diagram{background:var(--surface);border:1px solid var(--border);
+      border-radius:var(--radius);padding:24px;margin:16px 0}
+    .arch-row{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap}
+    .arch-node{background:var(--surface2);border:1px solid var(--border);
+      border-radius:10px;padding:12px 18px;text-align:center;min-width:110px}
+    .arch-node .icon{font-size:1.4rem;display:block;margin-bottom:4px}
+    .arch-node .label{font-family:var(--font-head);font-size:0.78rem;font-weight:700}
+    .arch-node .sublabel{font-size:0.65rem;color:var(--muted);margin-top:2px}
+    .arch-node.accent{border-color:var(--accent)}
+    .arch-node.accent2{border-color:var(--accent2)}
+    .arch-arrow{padding:0 8px;color:var(--muted);font-size:1.1rem;flex-shrink:0}
+    .arch-cols{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-top:16px}
+    .arch-service{background:var(--surface2);border:1px solid var(--border);
+      border-radius:8px;padding:12px 14px}
+    .arch-service-name{font-family:var(--font-head);font-weight:700;font-size:0.82rem;margin-bottom:3px}
+    .arch-service-role{font-size:0.72rem;color:var(--muted)}
+  </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="doc-header">
+  <div class="doc-badge">📘 Guide complet</div>
+  <h1>Déployer ton site sur<br/><em>GitHub + Netlify</em></h1>
+  <div class="doc-meta">
+    <span>🖥️ Windows</span>
+    <span>⏱️ ~30 min pour la 1ère mise en ligne</span>
+    <span>✅ Gratuit</span>
+    <span>🎾 Inclut API ATP</span>
+  </div>
+</div>
+
+<!-- TABLE OF CONTENTS -->
+<div class="toc">
+  <div class="toc-title">Sommaire</div>
+  <ol>
+    <li><a href="#archi">Architecture du projet</a></li>
+    <li><a href="#installation">Installation sur Windows</a></li>
+    <li><a href="#github">Mettre le code sur GitHub</a></li>
+    <li><a href="#netlify">Déployer sur Netlify</a></li>
+    <li><a href="#pages">Créer de nouvelles pages</a></li>
+    <li><a href="#api">Intégrer l'API ATP</a></li>
+    <li><a href="#domaine">Ajouter un nom de domaine</a></li>
+  </ol>
+</div>
+
+<!-- 1. ARCHITECTURE -->
+<div class="section" id="archi">
+  <div class="section-num">Section 01</div>
+  <h2>🗂️ Architecture du projet</h2>
+  <p>Ton site est un ensemble de fichiers HTML statiques hébergés par Netlify. Pas besoin de serveur — c'est rapide, gratuit et simple.</p>
+
+  <div class="arch-diagram">
+    <div class="arch-row">
+      <div class="arch-node">
+        <span class="icon">💻</span>
+        <div class="label">Ton PC</div>
+        <div class="sublabel">Windows</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node accent2">
+        <span class="icon">🐙</span>
+        <div class="label">GitHub</div>
+        <div class="sublabel">Stockage du code</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node accent">
+        <span class="icon">🌐</span>
+        <div class="label">Netlify</div>
+        <div class="sublabel">Mise en ligne auto</div>
+      </div>
+      <div class="arch-arrow">→</div>
+      <div class="arch-node">
+        <span class="icon">👤</span>
+        <div class="label">Visiteurs</div>
+        <div class="sublabel">Partout dans le monde</div>
+      </div>
+    </div>
+    <div class="arch-cols" style="margin-top:20px">
+      <div class="arch-service">
+        <div class="arch-service-name">🎾 TennisAPI (RapidAPI)</div>
+        <div class="arch-service-role">Classements ATP, stats joueurs</div>
+      </div>
+      <div class="arch-service">
+        <div class="arch-service-name">💳 Stripe</div>
+        <div class="arch-service-role">Paiements Free/Premium/Pro</div>
+      </div>
+      <div class="arch-service">
+        <div class="arch-service-name">🔐 Supabase</div>
+        <div class="arch-service-role">Authentification utilisateurs</div>
+      </div>
+      <div class="arch-service">
+        <div class="arch-service-name">📧 Resend</div>
+        <div class="arch-service-role">Emails transactionnels</div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Structure de fichiers</h3>
+  <div class="tree">
+    <span class="tree-folder">mon-site/</span><br/>
+    <span style="color:var(--muted)">│</span><br/>
+    ├── <span class="tree-file">index.html</span>  <span class="tree-comment">← Page d'accueil (landing page)</span><br/>
+    ├── <span class="tree-file">rankings.html</span>  <span class="tree-comment">← Classements ATP</span><br/>
+    ├── <span class="tree-file">compare.html</span>  <span class="tree-comment">← Comparatif joueurs</span><br/>
+    ├── <span class="tree-file">signup.html</span>  <span class="tree-comment">← Inscription / connexion</span><br/>
+    ├── <span class="tree-file">mentions-legales.html</span><br/>
+    ├── <span class="tree-file">cgv.html</span><br/>
+    ├── <span class="tree-folder">blog/</span><br/>
+    │   └── <span class="tree-file">index.html</span><br/>
+    ├── <span class="tree-file">netlify.toml</span>  <span class="tree-comment">← Config Netlify</span><br/>
+    └── <span class="tree-file">README.md</span>
+  </div>
+</div>
+
+<!-- 2. INSTALLATION -->
+<div class="section" id="installation">
+  <div class="section-num">Section 02</div>
+  <h2>🖥️ Installation sur Windows</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <h4>Installe Git pour Windows</h4>
+        <p>Va sur <strong>git-scm.com</strong> et télécharge Git. Pendant l'installation, garde toutes les options par défaut.</p>
+        <div class="code-block">
+          <div class="code-label">Vérifier l'installation (cmd ou PowerShell)<button class="copy-btn" onclick="copy(this,'git --version')">Copier</button></div>
+          <pre>git --version</pre>
+        </div>
+        <p>Tu devrais voir quelque chose comme <code>git version 2.x.x</code></p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <h4>Configure Git avec ton identité</h4>
+        <p>Ouvre <strong>Git Bash</strong> (installé avec Git) ou PowerShell et tape :</p>
+        <div class="code-block">
+          <div class="code-label">Git Bash / PowerShell<button class="copy-btn" onclick="copy(this,`git config --global user.name &quot;Ton Prénom Nom&quot;\ngit config --global user.email &quot;ton@email.com&quot;`)">Copier</button></div>
+          <pre>git config --global user.name "Ton Prénom Nom"
+git config --global user.email "<a href="/cdn-cgi/l/email-protection" class="__cf_email__" data-cfemail="02766d6c42676f636b6e2c616d6f">[email&#160;protected]</a>"</pre>
+        </div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <h4>Installe VS Code (optionnel mais recommandé)</h4>
+        <p>Va sur <strong>code.visualstudio.com</strong>. C'est l'éditeur de code idéal pour modifier tes fichiers HTML.</p>
+        <div class="callout success"><span class="callout-icon">✅</span><p>VS Code intègre Git nativement et te permet de voir tes modifications en surbrillance.</p></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-content">
+        <h4>Crée un dossier pour ton projet</h4>
+        <div class="code-block">
+          <div class="code-label">PowerShell<button class="copy-btn" onclick="copy(this,'mkdir C:\\projets\\mon-site\ncd C:\\projets\\mon-site')">Copier</button></div>
+          <pre>mkdir C:\projets\mon-site
+cd C:\projets\mon-site</pre>
+        </div>
+        <p>Copie tes fichiers HTML dans ce dossier (index.html, rankings.html, etc.)</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 3. GITHUB -->
+<div class="section" id="github">
+  <div class="section-num">Section 03</div>
+  <h2>🐙 Mettre le code sur GitHub</h2>
+
+  <div class="callout info"><span class="callout-icon">💡</span><p>GitHub est un peu comme Google Drive pour ton code. Chaque fois que tu sauvegardes (= "commit"), Netlify met automatiquement à jour ton site en ligne.</p></div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <h4>Crée un compte sur github.com</h4>
+        <p>Va sur <strong>github.com</strong> → Sign up. Choisis un username, ça sera dans l'URL de ton repo.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <h4>Crée un nouveau repository</h4>
+        <p>Clique sur le <strong>+</strong> en haut à droite → "New repository"</p>
+        <p>Nomme-le <code>mon-site-tennis</code> · Coche "Public" · Ne coche pas "Add README"</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <h4>Initialise Git dans ton dossier et envoie le code</h4>
+        <div class="code-block">
+          <div class="code-label">Git Bash — dans ton dossier C:\projets\mon-site<button class="copy-btn" onclick="copy(this,'git init\ngit add .\ngit commit -m &quot;Premier commit&quot;\ngit branch -M main\ngit remote add origin https://github.com/TON-USERNAME/mon-site-tennis.git\ngit push -u origin main')">Copier</button></div>
+          <pre>git init
+git add .
+git commit -m "Premier commit"
+git branch -M main
+git remote add origin https://github.com/TON-USERNAME/mon-site-tennis.git
+git push -u origin main</pre>
+        </div>
+        <div class="callout warn"><span class="callout-icon">⚠️</span><p>Remplace <strong>TON-USERNAME</strong> par ton vrai username GitHub !</p></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-content">
+        <h4>Modifier et republier ton site</h4>
+        <p>À chaque modification, répète ces 3 commandes :</p>
+        <div class="code-block">
+          <div class="code-label">Workflow quotidien<button class="copy-btn" onclick="copy(this,'git add .\ngit commit -m &quot;Description de tes modifications&quot;\ngit push')">Copier</button></div>
+          <pre>git add .
+git commit -m "Description de tes modifications"
+git push</pre>
+        </div>
+        <p>Netlify détecte le push et redéploie en <strong>moins de 60 secondes</strong> automatiquement.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 4. NETLIFY -->
+<div class="section" id="netlify">
+  <div class="section-num">Section 04</div>
+  <h2>🌐 Déployer sur Netlify</h2>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <h4>Crée un compte sur netlify.com</h4>
+        <p>Va sur <strong>netlify.com</strong> → "Sign up" → connecte-toi directement avec GitHub.</p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <h4>Importe ton repo GitHub</h4>
+        <p>Clique sur <strong>"Add new site"</strong> → "Import an existing project" → Sélectionne GitHub → Autorise Netlify → Choisis ton repo <code>mon-site-tennis</code></p>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <h4>Configure le déploiement</h4>
+        <p>Pour un site HTML statique, laisse tout vide :</p>
+        <p>• Build command : <em>(laisser vide)</em></p>
+        <p>• Publish directory : <code>.</code> (point = dossier racine)</p>
+        <p>Clique sur <strong>"Deploy site"</strong> et attends 1 minute.</p>
+        <div class="callout success"><span class="callout-icon">🎉</span><p>Ton site est maintenant accessible sur une URL du type <code>random-name.netlify.app</code></p></div>
+      </div>
+    </div>
+
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-content">
+        <h4>Crée le fichier netlify.toml (important)</h4>
+        <p>Crée ce fichier à la racine de ton projet :</p>
+        <div class="code-block">
+          <div class="code-label">netlify.toml<button class="copy-btn" onclick="copy(this,'[[redirects]]\n  from = &quot;/*&quot;\n  to = &quot;/index.html&quot;\n  status = 200\n\n[build]\n  publish = &quot;.&quot;')">Copier</button></div>
+          <pre>[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[build]
+  publish = "."</pre>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 5. PAGES -->
+<div class="section" id="pages">
+  <div class="section-num">Section 05</div>
+  <h2>📄 Créer de nouvelles pages</h2>
+
+  <p>Avec un site statique, <strong>chaque page = un fichier HTML</strong>. C'est aussi simple que ça.</p>
+
+  <h3>Créer une page "À propos"</h3>
+  <div class="code-block">
+    <div class="code-label">about.html — structure minimale</div>
+    <pre>&lt;!DOCTYPE html&gt;
+&lt;html lang="fr"&gt;
+&lt;head&gt;
+  &lt;meta charset="UTF-8"/&gt;
+  &lt;title&gt;À propos — MonSaaS&lt;/title&gt;
+  &lt;!-- Copie le même CSS que index.html --&gt;
+&lt;/head&gt;
+&lt;body&gt;
+  &lt;!-- Copie la même nav que index.html --&gt;
+
+  &lt;!-- Ton contenu ici --&gt;
+  &lt;h1&gt;À propos&lt;/h1&gt;
+
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+  </div>
+
+  <h3>Lier tes pages entre elles</h3>
+  <div class="code-block">
+    <div class="code-label">Dans ta navigation HTML</div>
+    <pre>&lt;nav&gt;
+  &lt;a href="index.html"&gt;Accueil&lt;/a&gt;
+  &lt;a href="rankings.html"&gt;Classements ATP&lt;/a&gt;
+  &lt;a href="compare.html"&gt;Comparatif&lt;/a&gt;
+  &lt;a href="about.html"&gt;À propos&lt;/a&gt;
+&lt;/nav&gt;</pre>
+  </div>
+
+  <div class="callout info"><span class="callout-icon">💡</span><p><strong>Astuce :</strong> Crée un fichier <code>nav.html</code> séparé avec juste le code de la navigation, puis inclus-le dans chaque page avec JavaScript pour éviter de dupliquer le code.</p></div>
+</div>
+
+<!-- 6. API ATP -->
+<div class="section" id="api">
+  <div class="section-num">Section 06</div>
+  <h2>🎾 Intégrer l'API ATP</h2>
+
+  <p>Pour obtenir les classements en temps réel, tu as besoin d'une clé API. Voici les meilleures options :</p>
+
+  <table class="api-table">
+    <thead>
+      <tr>
+        <th>API</th>
+        <th>Données</th>
+        <th>Gratuit</th>
+        <th>Recommandé</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>TennisAPI (RapidAPI)</strong></td>
+        <td>Classements, scores, stats, H2H</td>
+        <td><span class="badge free">500 req/mois</span></td>
+        <td><span class="badge rec">⭐ Recommandé</span></td>
+      </tr>
+      <tr>
+        <td><strong>API-Tennis</strong></td>
+        <td>Tournois, matchs en direct</td>
+        <td><span class="badge free">100 req/jour</span></td>
+        <td>—</td>
+      </tr>
+      <tr>
+        <td><strong>SofaScore</strong></td>
+        <td>Scores live, stats avancées</td>
+        <td><span class="badge paid">Payant</span></td>
+        <td>—</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <h3>Étapes pour obtenir ta clé RapidAPI</h3>
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <h4>Crée un compte sur rapidapi.com</h4>
+        <p>Gratuit, s'inscrit avec Google ou email.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <h4>Cherche "TennisAPI" et abonne-toi au plan gratuit</h4>
+        <p>Va sur <strong>rapidapi.com</strong> → cherche "tennisapi1" → clique "Subscribe to Test" → plan Basic (gratuit).</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <h4>Copie ta clé API</h4>
+        <p>Dans le header de chaque requête tu verras ta clé <code>X-RapidAPI-Key</code>. Copie-la.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">4</div>
+      <div class="step-content">
+        <h4>Remplace dans rankings.html</h4>
+        <div class="code-block">
+          <div class="code-label">rankings.html — ligne à modifier</div>
+          <pre>const RAPIDAPI_KEY = 'COLLE_TA_CLE_ICI';</pre>
+        </div>
+        <div class="callout warn"><span class="callout-icon">⚠️</span><p><strong>Ne jamais</strong> partager cette clé publiquement ! Pour un site pro, utilise les <strong>Netlify Environment Variables</strong> pour la masquer.</p></div>
+      </div>
+    </div>
+  </div>
+
+  <h3>Exemple d'appel API</h3>
+  <div class="code-block">
+    <div class="code-label">JavaScript — Appel classements ATP</div>
+    <pre>const response = await fetch(
+  'https://tennisapi1.p.rapidapi.com/api/tennis/rankings/atp',
+  {
+    headers: {
+      'x-rapidapi-host': 'tennisapi1.p.rapidapi.com',
+      'x-rapidapi-key': RAPIDAPI_KEY
+    }
+  }
+);
+const data = await response.json();
+console.log(data.rankings); // ← liste des joueurs</pre>
+  </div>
+</div>
+
+<!-- 7. DOMAINE -->
+<div class="section" id="domaine">
+  <div class="section-num">Section 07</div>
+  <h2>🌍 Ajouter un nom de domaine</h2>
+
+  <p>Par défaut tu as <code>xxx.netlify.app</code>. Pour avoir <code>monsite.com</code> :</p>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-n">1</div>
+      <div class="step-content">
+        <h4>Achète un domaine (~10€/an)</h4>
+        <p>Recommandés : <strong>Porkbun</strong> (moins cher), <strong>OVH</strong> (FR), <strong>Namecheap</strong>.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">2</div>
+      <div class="step-content">
+        <h4>Dans Netlify : "Domain settings"</h4>
+        <p>Va dans ton site Netlify → "Domain management" → "Add custom domain" → tape ton domaine.</p>
+      </div>
+    </div>
+    <div class="step">
+      <div class="step-n">3</div>
+      <div class="step-content">
+        <h4>Modifie les DNS chez ton registrar</h4>
+        <p>Netlify te donnera des enregistrements DNS à copier chez ton registrar. Le HTTPS est activé automatiquement (Let's Encrypt).</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="callout success"><span class="callout-icon">🚀</span><p>Ton site est maintenant accessible sur ton domaine personnalisé avec HTTPS, partout dans le monde !</p></div>
+</div>
+
+<script data-cfasync="false" src="/cdn-cgi/scripts/5c5dd728/cloudflare-static/email-decode.min.js"></script><script>
+function copy(btn, text) {
+  navigator.clipboard.writeText(text.replace(/\\n/g,'\n')).then(() => {
