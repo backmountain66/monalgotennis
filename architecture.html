@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Architecture — TennisIQ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Clash+Display:wght@400;500;600;700&family=Cabinet+Grotesk:wght@300;400;500;700;800&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#03080d;--s:#08111a;--s2:#0d1c27;
+      --border:rgba(255,255,255,0.06);--border2:rgba(255,255,255,0.1);
+      --accent:#c8f04a;--accent2:#0af;--accent3:#ff6b6b;
+      --text:#eaf2f8;--muted:#4d7a92;
+      --fh:'Clash Display',sans-serif;--fb:'Cabinet Grotesk',sans-serif;
+      --r:14px;
+    }
+    body{background:var(--bg);color:var(--text);font-family:var(--fb);
+      font-size:14px;line-height:1.65;max-width:960px;margin:0 auto;padding:40px 24px 80px}
+
+    /* HEADER */
+    .hdr{margin-bottom:48px;padding-bottom:28px;border-bottom:1px solid var(--border)}
+    .hdr-tag{display:inline-block;background:rgba(200,240,74,.08);border:1px solid rgba(200,240,74,.2);
+      color:var(--accent);padding:4px 12px;border-radius:50px;
+      font-size:0.68rem;font-weight:700;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:14px}
+    h1{font-family:var(--fh);font-size:2.2rem;font-weight:700;letter-spacing:-1.5px;margin-bottom:8px}
+    h1 em{font-style:normal;color:var(--accent)}
+    .hdr-sub{color:var(--muted);font-size:0.9rem}
+
+    /* SECTIONS */
+    .sec{margin-bottom:40px}
+    h2{font-family:var(--fh);font-size:1.1rem;font-weight:600;margin-bottom:16px;
+      display:flex;align-items:center;gap:8px;letter-spacing:-.3px}
+    h2 .num{background:var(--s2);border:1px solid var(--border2);color:var(--accent);
+      width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+      font-size:0.68rem;font-weight:800;flex-shrink:0}
+
+    /* ARCH DIAGRAM */
+    .arch{background:var(--s);border:1px solid var(--border);border-radius:var(--r);padding:24px;margin-bottom:16px}
+    .arch-flow{display:flex;align-items:center;justify-content:center;gap:0;flex-wrap:wrap;margin-bottom:20px}
+    .anode{background:var(--s2);border:1px solid var(--border2);border-radius:10px;
+      padding:10px 16px;text-align:center;min-width:100px}
+    .anode .ico{font-size:1.3rem;display:block;margin-bottom:4px}
+    .anode .lbl{font-family:var(--fh);font-size:0.72rem;font-weight:600}
+    .anode .sub{font-size:0.62rem;color:var(--muted);margin-top:2px}
+    .anode.hi{border-color:var(--accent)}
+    .arrow{padding:0 6px;color:var(--muted);font-size:1rem}
+    .services{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+    .svc{background:var(--s2);border:1px solid var(--border);border-radius:10px;padding:12px 14px}
+    .svc-top{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+    .svc-icon{font-size:1.1rem}
+    .svc-name{font-family:var(--fh);font-weight:600;font-size:0.82rem}
+    .svc-role{font-size:0.72rem;color:var(--muted);line-height:1.5}
+    .svc-tag{display:inline-block;padding:2px 7px;border-radius:50px;
+      font-size:0.62rem;font-weight:700;margin-top:6px}
+    .svc-tag.free{background:rgba(200,240,74,.1);color:var(--accent)}
+    .svc-tag.paid{background:rgba(255,107,107,.1);color:var(--accent3)}
+
+    /* FILE TREE */
+    .tree{background:var(--s2);border:1px solid var(--border);
+      border-radius:var(--r);padding:16px 20px;
+      font-family:'DM Mono',monospace,sans-serif;font-size:0.78rem;line-height:1.9}
+    .tf{color:var(--text)}
+    .td{color:var(--accent2)}
+    .tc{color:var(--muted);font-style:italic}
+
+    /* ROADMAP */
+    .roadmap{display:flex;flex-direction:column;gap:0}
+    .phase{display:grid;grid-template-columns:140px 1fr;gap:0;border-left:2px solid var(--border2);padding-left:0}
+    .phase-label{padding:16px 16px 16px 0;position:relative}
+    .phase-label::before{content:'';position:absolute;right:-5px;top:22px;
+      width:8px;height:8px;border-radius:50%;background:var(--s2);border:2px solid var(--border2)}
+    .phase-label.done::before{background:var(--accent);border-color:var(--accent)}
+    .phase-label.now::before{background:var(--accent2);border-color:var(--accent2);box-shadow:0 0 0 4px rgba(0,170,255,.15)}
+    .phase-week{font-family:var(--fh);font-size:0.7rem;font-weight:700;letter-spacing:1px;
+      text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+    .phase-name{font-size:0.82rem;font-weight:600}
+    .phase-content{padding:16px;background:var(--s);margin-bottom:2px;
+      border-radius:0 10px 10px 0;border:1px solid var(--border);border-left:none}
+    .phase-tasks{display:flex;flex-direction:column;gap:5px}
+    .task{display:flex;align-items:center;gap:8px;font-size:0.8rem;color:var(--muted)}
+    .task .dot{width:5px;height:5px;border-radius:50%;background:var(--border2);flex-shrink:0}
+    .task.done{color:var(--text)}
+    .task.done .dot{background:var(--accent)}
+
+    /* ALGO BREAKDOWN */
+    .algo-table{width:100%;border-collapse:collapse}
+    .algo-table th{text-align:left;padding:9px 14px;background:var(--s2);
+      font-size:0.68rem;font-weight:700;letter-spacing:1px;text-transform:uppercase;
+      color:var(--muted);border-bottom:1px solid var(--border)}
+    .algo-table td{padding:11px 14px;border-bottom:1px solid var(--border);font-size:0.82rem;vertical-align:top}
+    .algo-table tr:last-child td{border-bottom:none}
+    .w-bar{height:6px;background:var(--s2);border-radius:6px;margin-top:6px;overflow:hidden}
+    .w-fill{height:100%;background:linear-gradient(90deg,var(--accent),rgba(200,240,74,.4));border-radius:6px}
+    .mod-badge{display:inline-block;padding:2px 8px;border-radius:50px;
+      font-size:0.65rem;font-weight:700;background:rgba(200,240,74,.1);color:var(--accent)}
+
+    /* PRICING */
+    .price-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+    .price-card{background:var(--s);border:1px solid var(--border);border-radius:var(--r);padding:20px}
+    .price-card.hi{border-color:var(--accent)}
+    .pc-name{font-size:0.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:8px}
+    .pc-price{font-family:var(--fh);font-size:2rem;font-weight:700;letter-spacing:-1px;margin-bottom:4px}
+    .pc-price small{font-size:0.8rem;font-weight:400;color:var(--muted)}
+    .pc-feats{display:flex;flex-direction:column;gap:5px;margin-top:12px}
+    .pc-feat{font-size:0.78rem;color:var(--muted);display:flex;gap:6px}
+    .ck{color:var(--accent)}
+    .no{color:var(--muted)}
+
+    .callout{border-radius:10px;padding:12px 16px;margin:14px 0;font-size:0.82rem;
+      display:flex;gap:8px;align-items:flex-start}
+    .callout.info{background:rgba(0,170,255,.06);border:1px solid rgba(0,170,255,.18)}
+    .callout.warn{background:rgba(200,240,74,.05);border:1px solid rgba(200,240,74,.18)}
+    .callout p{margin:0;color:var(--text)}
+  </style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-tag">🏗️ Architecture</div>
+  <h1>TennisIQ — <em>Plan complet</em></h1>
+  <p class="hdr-sub">Architecture technique · Algorithme · Modèle économique · Roadmap de lancement</p>
+</div>
+
+<!-- 1. ARCHITECTURE -->
+<div class="sec">
+  <h2><span class="num">1</span> Architecture technique</h2>
+  <div class="arch">
+    <div class="arch-flow">
+      <div class="anode">
+        <span class="ico">💻</span>
+        <div class="lbl">Ton PC</div>
+        <div class="sub">VS Code + Git</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="anode">
+        <span class="ico">🐙</span>
+        <div class="lbl">GitHub</div>
+        <div class="sub">Code source</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="anode hi">
+        <span class="ico">🌐</span>
+        <div class="lbl">Netlify</div>
+        <div class="sub">Hébergement auto</div>
+      </div>
+      <div class="arrow">→</div>
+      <div class="anode">
+        <span class="ico">👤</span>
+        <div class="lbl">Utilisateur</div>
+        <div class="sub">Partout dans le monde</div>
+      </div>
+    </div>
+    <div class="services">
+      <div class="svc">
+        <div class="svc-top"><span class="svc-icon">🎾</span><span class="svc-name">TennisAPI</span></div>
+        <div class="svc-role">Classements ATP, résultats, stats joueurs en temps réel</div>
+        <span class="svc-tag free">Gratuit 500 req/mois</span>
+      </div>
+      <div class="svc">
+        <div class="svc-top"><span class="svc-icon">🔐</span><span class="svc-name">Supabase</span></div>
+        <div class="svc-role">Authentification, base de données utilisateurs, quotas</div>
+        <span class="svc-tag free">Gratuit jusqu'à 50k users</span>
+      </div>
+      <div class="svc">
+        <div class="svc-top"><span class="svc-icon">💳</span><span class="svc-name">Stripe</span></div>
+        <div class="svc-role">Abonnement 5€/mois, gestion des paiements récurrents</div>
+        <span class="svc-tag paid">2.9% + 0.30€ / transaction</span>
+      </div>
+      <div class="svc">
+        <div class="svc-top"><span class="svc-icon">📧</span><span class="svc-name">Resend</span></div>
+        <div class="svc-role">Emails de confirmation, facturation, relances</div>
+        <span class="svc-tag free">Gratuit 3000/mois</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- 2. FICHIERS -->
+<div class="sec">
+  <h2><span class="num">2</span> Structure des fichiers</h2>
+  <div class="tree">
+    <span class="td">tennisiq/</span><br/>
+    ├── <span class="tf">index.html</span>        <span class="tc">← Landing page (accueil + tarifs)</span><br/>
+    ├── <span class="tf">app.html</span>           <span class="tc">← App principale (comparateur)</span><br/>
+    ├── <span class="tf">rankings.html</span>      <span class="tc">← Classements ATP</span><br/>
+    ├── <span class="tf">signup.html</span>        <span class="tc">← Inscription / connexion</span><br/>
+    ├── <span class="tf">mentions-legales.html</span><br/>
+    ├── <span class="tf">cgv.html</span><br/>
+    ├── <span class="tf">contact.html</span><br/>
+    ├── <span class="td">assets/</span><br/>
+    │   ├── <span class="tf">style.css</span>      <span class="tc">← Styles communs</span><br/>
+    │   └── <span class="tf">algo.js</span>        <span class="tc">← Ton algorithme</span><br/>
+    └── <span class="tf">netlify.toml</span>       <span class="tc">← Config déploiement</span>
+  </div>
+</div>
+
+<!-- 3. ALGORITHME -->
+<div class="sec">
+  <h2><span class="num">3</span> Ton algorithme de comparaison</h2>
+  <div class="callout warn">
+    <p>💡 <strong>Tu peux modifier les poids</strong> directement dans app.html pour personnaliser l'importance de chaque critère. Le total doit toujours faire 100%.</p>
+  </div>
+  <table class="algo-table">
+    <thead>
+      <tr>
+        <th>Critère</th>
+        <th>Poids</th>
+        <th>Source de données</th>
+        <th>Personnalisable</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>🏆 Classement ATP</strong><br/><span style="color:var(--muted);font-size:.75rem">Position dans le classement mondial</span></td>
+        <td>
+          30%
+          <div class="w-bar"><div class="w-fill" style="width:30%"></div></div>
+        </td>
+        <td>TennisAPI (temps réel)</td>
+        <td><span class="mod-badge">Modifiable</span></td>
+      </tr>
+      <tr>
+        <td><strong>🔥 Forme récente</strong><br/><span style="color:var(--muted);font-size:.75rem">% de victoires sur les 5 derniers matchs</span></td>
+        <td>
+          28%
+          <div class="w-bar"><div class="w-fill" style="width:28%"></div></div>
+        </td>
+        <td>TennisAPI (résultats récents)</td>
+        <td><span class="mod-badge">Modifiable</span></td>
+      </tr>
+      <tr>
+        <td><strong>🎾 Stats par surface</strong><br/><span style="color:var(--muted);font-size:.75rem">Performance sur Hard / Clay / Grass</span></td>
+        <td>
+          25%
+          <div class="w-bar"><div class="w-fill" style="width:25%"></div></div>
+        </td>
+        <td>TennisAPI + données historiques</td>
+        <td><span class="mod-badge">Modifiable</span></td>
+      </tr>
+      <tr>
+        <td><strong>⚔️ Head-to-Head</strong><br/><span style="color:var(--muted);font-size:.75rem">Bilan des confrontations directes</span></td>
+        <td>
+          17%
+          <div class="w-bar"><div class="w-fill" style="width:17%"></div></div>
+        </td>
+        <td>TennisAPI (historique H2H)</td>
+        <td><span class="mod-badge">Modifiable</span></td>
+      </tr>
+    </tbody>
+  </table>
+  <div class="callout info" style="margin-top:14px">
+    <p>🔧 <strong>Pour ajouter tes propres critères</strong> (ex: fatigue, altitude, cote bookmaker...) ouvre app.html et ajoute un objet dans le tableau <code>criteria</code>. L'algo recalcule automatiquement.</p>
+  </div>
+</div>
+
+<!-- 4. PRICING -->
+<div class="sec">
+  <h2><span class="num">4</span> Modèle économique</h2>
+  <div class="price-grid">
+    <div class="price-card">
+      <div class="pc-name">Gratuit</div>
+      <div class="pc-price">0€ <small>/ mois</small></div>
+      <div class="pc-feats">
+        <div class="pc-feat"><span class="ck">✓</span> 1 analyse par jour</div>
+        <div class="pc-feat"><span class="ck">✓</span> Top 20 ATP</div>
+        <div class="pc-feat"><span class="ck">✓</span> Résultats partiels</div>
+        <div class="pc-feat"><span class="no">✗</span> Analyses illimitées</div>
+        <div class="pc-feat"><span class="no">✗</span> Top 100 complet</div>
+        <div class="pc-feat"><span class="no">✗</span> H2H complet</div>
+      </div>
+    </div>
+    <div class="price-card hi">
+      <div class="pc-name">Premium</div>
+      <div class="pc-price">5€ <small>/ mois</small></div>
+      <div class="pc-feats">
+        <div class="pc-feat"><span class="ck">✓</span> Analyses illimitées</div>
+        <div class="pc-feat"><span class="ck">✓</span> Top 100 ATP complet</div>
+        <div class="pc-feat"><span class="ck">✓</span> H2H détaillé</div>
+        <div class="pc-feat"><span class="ck">✓</span> Filtres surface avancés</div>
+        <div class="pc-feat"><span class="ck">✓</span> Historique analyses</div>
+      </div>
+    </div>
+  </div>
+  <div class="callout info" style="margin-top:12px">
+    <p>💰 <strong>Objectif</strong> : 50 abonnés Premium = 250€/mois · 200 abonnés = 1000€/mois. Coût mensuel estimé : ~30€ (API + Supabase + Stripe fees).</p>
+  </div>
+</div>
+
+<!-- 5. ROADMAP -->
+<div class="sec">
+  <h2><span class="num">5</span> Roadmap de lancement</h2>
+  <div class="roadmap">
+    <div class="phase">
+      <div class="phase-label done">
+        <div class="phase-week">Semaine 1</div>
+        <div class="phase-name" style="color:var(--accent)">✅ Base</div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-tasks">
+          <div class="task done"><div class="dot"></div>Landing page + app comparateur</div>
+          <div class="task done"><div class="dot"></div>Algorithme 4 critères fonctionnel</div>
+          <div class="task done"><div class="dot"></div>Déploiement GitHub + Netlify</div>
+        </div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-label now">
+        <div class="phase-week">Semaine 2</div>
+        <div class="phase-name" style="color:var(--accent2)">⚡ En cours</div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-tasks">
+          <div class="task"><div class="dot"></div>Clé API RapidAPI (TennisAPI)</div>
+          <div class="task"><div class="dot"></div>Compte Stripe + lien de paiement</div>
+          <div class="task"><div class="dot"></div>Compte Supabase (auth utilisateurs)</div>
+        </div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-label">
+        <div class="phase-week">Semaine 3</div>
+        <div class="phase-name">🔐 Auth</div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-tasks">
+          <div class="task"><div class="dot"></div>Connexion / Inscription fonctionnelle</div>
+          <div class="task"><div class="dot"></div>Quota gratuit (1/jour) lié au compte</div>
+          <div class="task"><div class="dot"></div>Vérification abonnement Stripe</div>
+        </div>
+      </div>
+    </div>
+    <div class="phase">
+      <div class="phase-label">
+        <div class="phase-week">Semaine 4</div>
+        <div class="phase-name">🚀 Lancement</div>
+      </div>
+      <div class="phase-content">
+        <div class="phase-tasks">
+          <div class="task"><div class="dot"></div>Nom de domaine personnalisé</div>
+          <div class="task"><div class="dot"></div>Mentions légales + CGV</div>
+          <div class="task"><div class="dot"></div>Lancement public + premiers utilisateurs</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
