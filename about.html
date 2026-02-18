@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>À propos — Mon Algo Tennis</title>
+  <meta name="description" content="Mon Algo Tennis : comparateur ATP gratuit avec algorithme propriétaire. Découvrez notre méthode d'analyse multicritères."/>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f9f7f4;--bg2:#f2efe9;--border:#e8e3db;--border2:#d4cec4;
+      --accent:#1a6b3c;--al:rgba(26,107,60,.08);
+      --text:#1a1612;--text2:#4a4540;--muted:#8a8278;
+      --r:12px;--fh:'Instrument Serif',Georgia,serif;--fb:'Geist',system-ui,sans-serif;
+    }
+    body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.7;margin:0}
+    nav{position:sticky;top:0;z-index:100;background:rgba(249,247,244,.94);
+      backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+      padding:14px 5%;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:var(--fh);font-size:1.2rem;font-style:italic;
+      color:var(--text);text-decoration:none;display:flex;align-items:center;gap:6px}
+    .logo span{width:7px;height:7px;background:var(--accent);border-radius:50%}
+    .nav-link{color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color .2s}
+    .nav-link:hover{color:var(--accent)}
+    main{max-width:720px;margin:0 auto;padding:60px 5% 80px}
+    h1{font-family:var(--fh);font-size:2.5rem;font-weight:400;letter-spacing:-.5px;margin-bottom:12px;line-height:1.1}
+    h1 em{font-style:italic;color:var(--accent)}
+    .intro{color:var(--muted);font-size:1.05rem;margin-bottom:48px}
+    h2{font-family:var(--fh);font-size:1.3rem;font-weight:400;margin:40px 0 16px;letter-spacing:-.3px}
+    p{margin-bottom:16px;color:var(--text2)}
+    .highlight{background:var(--al);border-left:3px solid var(--accent);padding:16px 20px;border-radius:8px;margin:24px 0}
+    footer{background:var(--bg2);border-top:1px solid var(--border);
+      padding:32px 5%;text-align:center;color:var(--muted);font-size:0.82rem}
+    footer a{color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo"><span></span>Mon Algo Tennis</a>
+  <a href="index.html" class="nav-link">← Retour au comparateur</a>
+</nav>
+
+<main>
+  <h1>À propos de <em>Mon Algo Tennis</em></h1>
+  <p class="intro">Un outil d'analyse 100% gratuit pour comparer les joueurs ATP avec un algorithme propriétaire basé sur des données officielles.</p>
+
+  <h2>Notre mission</h2>
+  <p>Mon Algo Tennis a été créé pour offrir un outil d'analyse accessible à tous les passionnés de tennis. Nous croyons que l'accès à des données de qualité ne devrait pas être réservé aux professionnels.</p>
+
+  <h2>Comment ça marche ?</h2>
+  <p>Notre algorithme propriétaire analyse chaque opposition en pondérant 4 critères clés :</p>
+  <ul style="margin-left:20px;margin-bottom:20px">
+    <li><strong>Forme récente</strong> — Performance sur les derniers matchs</li>
+    <li><strong>Stats par surface</strong> — Hard, Clay ou Grass</li>
+    <li><strong>Head-to-Head</strong> — Historique des confrontations directes</li>
+    <li><strong>Régularité</strong> — Stabilité du niveau de jeu</li>
+  </ul>
+
+  <div class="highlight">
+    <strong>🔒 Algorithme propriétaire</strong><br/>
+    La pondération exacte de nos critères reste confidentielle. C'est ce qui fait la valeur de notre analyse.
+  </div>
+
+  <h2>Des données 100% réelles</h2>
+  <p>Contrairement à d'autres outils, nous ne faisons aucune approximation. Toutes nos données proviennent de l'API officielle TennisAPI via RapidAPI, garantissant une précision maximale.</p>
+
+  <h2>Gratuit, vraiment ?</h2>
+  <p>Oui. Mon Algo Tennis est 100% gratuit, sans création de compte, sans publicité intrusive. Notre objectif est de démocratiser l'accès à l'analyse tennistique de qualité.</p>
+
+  <h2>Avertissement important</h2>
+  <p style="color:var(--muted);font-size:0.9rem">Mon Algo Tennis est un outil d'aide à la décision, pas un oracle. Les résultats sportifs comportent toujours une part d'aléatoire. Cet outil ne constitue en aucun cas un conseil de pari. Si vous pariez, faites-le de manière responsable.</p>
+</main>
+
+<footer>
+  Mon Algo Tennis · <a href="index.html">Comparateur</a> · <a href="contact.html">Contact</a><br/>
+  © 2025 Mon Algo Tennis
+</footer>
+</body>
+</html>

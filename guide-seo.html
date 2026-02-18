@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Guide SEO — Comment référencer Mon Algo Tennis sur Google</title>
+  <style>
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{font-family:system-ui,sans-serif;background:#fafafa;color:#222;line-height:1.7;padding:40px 20px}
+    .container{max-width:800px;margin:0 auto;background:white;padding:40px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+    h1{font-size:2rem;margin-bottom:10px;color:#1a6b3c}
+    .intro{color:#666;margin-bottom:40px;font-size:1.05rem}
+    h2{font-size:1.4rem;margin:32px 0 16px;color:#333;border-bottom:2px solid #1a6b3c;padding-bottom:8px}
+    h3{font-size:1.1rem;margin:24px 0 12px;color:#555}
+    p{margin-bottom:12px}
+    code{background:#f4f4f4;padding:2px 6px;border-radius:4px;font-size:0.9em;color:#c7254e}
+    pre{background:#f8f8f8;border:1px solid #ddd;border-radius:6px;padding:16px;overflow-x:auto;margin:16px 0}
+    .step{background:#f9fff9;border-left:4px solid #1a6b3c;padding:16px;margin:16px 0;border-radius:4px}
+    .step strong{color:#1a6b3c}
+    .warning{background:#fff9f0;border-left:4px solid #ff9800;padding:16px;margin:16px 0;border-radius:4px}
+    ul{margin:12px 0 12px 24px}
+    li{margin-bottom:8px}
+    .checklist{list-style:none;margin-left:0}
+    .checklist li:before{content:"✓ ";color:#1a6b3c;font-weight:bold;margin-right:8px}
+    a{color:#1a6b3c;text-decoration:none}
+    a:hover{text-decoration:underline}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>📈 Guide SEO complet</h1>
+  <p class="intro">Comment faire apparaître <strong>Mon Algo Tennis</strong> sur Google en moins de 2 semaines.</p>
+
+  <h2>1. Prérequis techniques (déjà en place ✓)</h2>
+  <ul class="checklist">
+    <li>Site hébergé sur Netlify avec HTTPS</li>
+    <li>Structure HTML propre et sémantique</li>
+    <li>Meta descriptions présentes</li>
+    <li>Responsive (mobile-friendly)</li>
+  </ul>
+
+  <h2>2. Soumission à Google (PRIORITÉ 1)</h2>
+  
+  <div class="step">
+    <strong>Étape 1 — Google Search Console</strong>
+    <ol style="margin:12px 0 0 20px">
+      <li>Va sur <a href="https://search.google.com/search-console" target="_blank">search.google.com/search-console</a></li>
+      <li>Clique "Ajouter une propriété"</li>
+      <li>Choisis "Préfixe d'URL" et entre ton URL complète (ex: https://monalgotennis.netlify.app)</li>
+      <li>Vérifie via fichier HTML ou DNS (Netlify facilite ça)</li>
+      <li>Une fois vérifié, clique sur "Demander une indexation" pour chaque page</li>
+    </ol>
+  </div>
+
+  <div class="step">
+    <strong>Étape 2 — Créer un sitemap.xml</strong>
+    <p>Crée un fichier <code>sitemap.xml</code> à la racine de ton site :</p>
+    <pre>&lt;?xml version="1.0" encoding="UTF-8"?&gt;
+&lt;urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://ton-site.netlify.app/&lt;/loc&gt;
+    &lt;lastmod&gt;2025-02-18&lt;/lastmod&gt;
+    &lt;priority&gt;1.0&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://ton-site.netlify.app/about.html&lt;/loc&gt;
+    &lt;lastmod&gt;2025-02-18&lt;/lastmod&gt;
+    &lt;priority&gt;0.8&lt;/priority&gt;
+  &lt;/url&gt;
+  &lt;url&gt;
+    &lt;loc&gt;https://ton-site.netlify.app/contact.html&lt;/loc&gt;
+    &lt;lastmod&gt;2025-02-18&lt;/lastmod&gt;
+    &lt;priority&gt;0.6&lt;/priority&gt;
+  &lt;/url&gt;
+&lt;/urlset&gt;</pre>
+    <p>Upload ce fichier sur GitHub, puis soumet l'URL dans Google Search Console → Sitemaps</p>
+  </div>
+
+  <h2>3. Optimisation SEO On-Page</h2>
+
+  <h3>Meta descriptions (à ajouter dans chaque page)</h3>
+  <p>Ajoute ces lignes dans le <code>&lt;head&gt;</code> de chaque page HTML :</p>
+  <pre>&lt;!-- index.html --&gt;
+&lt;meta name="description" content="Mon Algo Tennis : comparateur ATP gratuit avec algorithme propriétaire. Comparez 2 joueurs du Top 100 en temps réel. Données officielles via API."&gt;
+&lt;meta name="keywords" content="comparateur tennis, algorithme tennis, pronostic ATP, analyse tennis gratuit"&gt;
+
+&lt;!-- about.html --&gt;
+&lt;meta name="description" content="Découvrez Mon Algo Tennis, notre algorithme propriétaire d'analyse ATP et notre mission de démocratiser l'accès aux données tennis."&gt;
+
+&lt;!-- contact.html --&gt;
+&lt;meta name="description" content="Contactez Mon Algo Tennis pour toute question, suggestion ou signalement de bug."&gt;</pre>
+
+  <h3>Balises Open Graph (partage réseaux sociaux)</h3>
+  <pre>&lt;meta property="og:title" content="Mon Algo Tennis — Comparateur ATP gratuit"&gt;
+&lt;meta property="og:description" content="Algorithme propriétaire pour comparer les joueurs ATP"&gt;
+&lt;meta property="og:type" content="website"&gt;
+&lt;meta property="og:url" content="https://ton-site.netlify.app"&gt;</pre>
+
+  <h2>4. Stratégie de contenu</h2>
+
+  <h3>Créer une page Blog (recommandé)</h3>
+  <p>Publier 1 article par semaine sur des sujets comme :</p>
+  <ul>
+    <li>"Comment analyser un match ATP avant de parier"</li>
+    <li>"L'importance du H2H dans les pronostics tennis"</li>
+    <li>"Pourquoi la surface change tout au tennis"</li>
+    <li>"Top 10 ATP février 2025 : notre analyse"</li>
+  </ul>
+  <p><strong>Impact SEO :</strong> Google adore le contenu frais et régulier. 1 article/semaine = indexation rapide.</p>
+
+  <h3>Mots-clés à cibler</h3>
+  <ul>
+    <li><strong>Primaires :</strong> "comparateur tennis", "algorithme tennis ATP", "pronostic tennis gratuit"</li>
+    <li><strong>Longue traîne :</strong> "comment comparer deux joueurs de tennis", "analyse match ATP gratuit", "algorithme pronostic tennis"</li>
+  </ul>
+
+  <h2>5. Backlinks et visibilité</h2>
+
+  <h3>Où partager ton site</h3>
+  <ul>
+    <li><strong>Reddit</strong> : r/tennis, r/sportsbetting (attention au spam, apporte de la valeur)</li>
+    <li><strong>Forums tennis</strong> : tennisforum.com, talk-tennis.com</li>
+    <li><strong>Twitter/X</strong> : Partage des analyses intéressantes avec #ATP #Tennis</li>
+    <li><strong>Product Hunt</strong> : Lance ton site comme un "free ATP comparison tool"</li>
+  </ul>
+
+  <div class="warning">
+    <strong>⚠️ Important :</strong> Ne fais pas de spam. Partage uniquement du contenu utile et réponds aux questions. Les backlinks naturels valent 10x plus que du spam.
+  </div>
+
+  <h2>6. Analytics (suivi des résultats)</h2>
+  
+  <div class="step">
+    <strong>Installer Google Analytics (gratuit)</strong>
+    <ol style="margin:12px 0 0 20px">
+      <li>Va sur <a href="https://analytics.google.com" target="_blank">analytics.google.com</a></li>
+      <li>Crée une propriété pour ton site</li>
+      <li>Copie le code de tracking et colle-le dans le <code>&lt;head&gt;</code> de toutes tes pages</li>
+      <li>Tu pourras suivre : visiteurs, pages vues, durée de session, taux de rebond</li>
+    </ol>
+  </div>
+
+  <h2>7. Timeline réaliste</h2>
+  <ul>
+    <li><strong>Jour 1-3 :</strong> Soumission Google Search Console + création sitemap</li>
+    <li><strong>Semaine 1 :</strong> Première indexation (ton site apparaît sur Google si on cherche l'URL exacte)</li>
+    <li><strong>Semaine 2-4 :</strong> Indexation complète des pages</li>
+    <li><strong>Mois 1-2 :</strong> Début de classement sur tes mots-clés (position 30-50)</li>
+    <li><strong>Mois 3-6 :</strong> Amélioration progressive (position 10-20 si bon contenu)</li>
+  </ul>
+
+  <h2>8. Checklist finale</h2>
+  <ul class="checklist">
+    <li>Ajouter meta descriptions sur toutes les pages</li>
+    <li>Créer sitemap.xml</li>
+    <li>S'inscrire sur Google Search Console</li>
+    <li>Soumettre l'URL et le sitemap</li>
+    <li>Installer Google Analytics</li>
+    <li>Créer 1-2 articles de blog pour commencer</li>
+    <li>Partager le site (Reddit, Twitter, forums)</li>
+    <li>Vérifier que le site est rapide (test sur PageSpeed Insights)</li>
+  </ul>
+
+  <div class="warning">
+    <strong>💡 Astuce bonus :</strong> Achète un nom de domaine personnalisé (ex: monalgotennis.fr pour ~10€/an). Google favorise les sites avec un vrai domaine vs les sous-domaines netlify.app.
+  </div>
+
+  <h2>9. Outils gratuits utiles</h2>
+  <ul>
+    <li><a href="https://search.google.com/test/mobile-friendly" target="_blank">Google Mobile-Friendly Test</a> — Vérifie que ton site est mobile-friendly</li>
+    <li><a href="https://pagespeed.web.dev/" target="_blank">PageSpeed Insights</a> — Vérifie la vitesse de ton site</li>
+    <li><a href="https://www.google.com/search?q=site:ton-site.netlify.app" target="_blank">Google Site Search</a> — Vérifie quelles pages sont indexées</li>
+    <li><a href="https://trends.google.com/trends/" target="_blank">Google Trends</a> — Trouve les mots-clés tendance</li>
+  </ul>
+
+  <p style="margin-top:40px;padding-top:20px;border-top:1px solid #ddd;color:#666;font-size:0.9rem">
+    <strong>Besoin d'aide ?</strong> Le SEO prend du temps mais ces étapes te mettront sur les rails. Patience = clé du succès !
+  </p>
+</div>
+</body>
+</html>

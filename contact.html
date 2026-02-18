@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contact — Mon Algo Tennis</title>
+  <meta name="description" content="Contactez Mon Algo Tennis pour toute question sur notre comparateur ATP gratuit."/>
+  <link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Geist:wght@300;400;500;600;700&display=swap" rel="stylesheet"/>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#f9f7f4;--bg2:#f2efe9;--border:#e8e3db;--border2:#d4cec4;
+      --accent:#1a6b3c;--al:rgba(26,107,60,.08);
+      --text:#1a1612;--text2:#4a4540;--muted:#8a8278;
+      --r:12px;--fh:'Instrument Serif',Georgia,serif;--fb:'Geist',system-ui,sans-serif;
+    }
+    body{background:var(--bg);color:var(--text);font-family:var(--fb);font-size:15px;line-height:1.7;margin:0}
+    nav{position:sticky;top:0;z-index:100;background:rgba(249,247,244,.94);
+      backdrop-filter:blur(20px);border-bottom:1px solid var(--border);
+      padding:14px 5%;display:flex;align-items:center;justify-content:space-between}
+    .logo{font-family:var(--fh);font-size:1.2rem;font-style:italic;
+      color:var(--text);text-decoration:none;display:flex;align-items:center;gap:6px}
+    .logo span{width:7px;height:7px;background:var(--accent);border-radius:50%}
+    .nav-link{color:var(--muted);text-decoration:none;font-size:0.88rem;font-weight:500;transition:color .2s}
+    .nav-link:hover{color:var(--accent)}
+    main{max-width:600px;margin:0 auto;padding:60px 5% 80px}
+    h1{font-family:var(--fh);font-size:2.5rem;font-weight:400;letter-spacing:-.5px;margin-bottom:12px;line-height:1.1}
+    h1 em{font-style:italic;color:var(--accent)}
+    .intro{color:var(--muted);font-size:1.05rem;margin-bottom:48px}
+    .contact-box{background:white;border:1px solid var(--border);border-radius:var(--r);padding:32px;margin-top:32px}
+    .contact-item{margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid var(--border)}
+    .contact-item:last-child{border-bottom:none;margin-bottom:0;padding-bottom:0}
+    .contact-item h3{font-family:var(--fh);font-size:1rem;margin-bottom:8px}
+    .contact-item p{color:var(--text2);font-size:0.9rem;margin:0}
+    .contact-item a{color:var(--accent);text-decoration:none;font-weight:500}
+    .contact-item a:hover{text-decoration:underline}
+    footer{background:var(--bg2);border-top:1px solid var(--border);
+      padding:32px 5%;text-align:center;color:var(--muted);font-size:0.82rem}
+    footer a{color:var(--accent);text-decoration:none}
+  </style>
+</head>
+<body>
+<nav>
+  <a href="index.html" class="logo"><span></span>Mon Algo Tennis</a>
+  <a href="index.html" class="nav-link">← Retour au comparateur</a>
+</nav>
+
+<main>
+  <h1><em>Contactez-nous</em></h1>
+  <p class="intro">Une question, une suggestion ou un bug à signaler ? Nous sommes à votre écoute.</p>
+
+  <div class="contact-box">
+    <div class="contact-item">
+      <h3>📧 Email</h3>
+      <p><a href="mailto:contact@monalgotennis.fr">contact@monalgotennis.fr</a></p>
+      <p style="font-size:0.82rem;color:var(--muted);margin-top:6px">Réponse sous 48h en moyenne</p>
+    </div>
+
+    <div class="contact-item">
+      <h3>🐛 Signaler un bug</h3>
+      <p>Si vous rencontrez un problème technique, merci de nous envoyer un email avec :</p>
+      <ul style="font-size:0.88rem;color:var(--muted);margin:8px 0 0 20px;line-height:1.6">
+        <li>Une description du problème</li>
+        <li>Votre navigateur (Chrome, Firefox, Safari...)</li>
+        <li>Une capture d'écran si possible</li>
+      </ul>
+    </div>
+
+    <div class="contact-item">
+      <h3>💡 Suggérer une amélioration</h3>
+      <p>Vous avez une idée pour améliorer Mon Algo Tennis ? Nous sommes preneurs de tous les retours constructifs !</p>
+    </div>
+
+    <div class="contact-item">
+      <h3>⚠️ Abus et données</h3>
+      <p style="font-size:0.88rem;color:var(--muted)">Mon Algo Tennis ne collecte aucune donnée personnelle. Nous utilisons uniquement l'API TennisAPI pour fournir nos analyses. Aucun cookie de tracking n'est installé.</p>
+    </div>
+  </div>
+</main>
+
+<footer>
+  Mon Algo Tennis · <a href="index.html">Comparateur</a> · <a href="about.html">À propos</a><br/>
+  © 2025 Mon Algo Tennis
+</footer>
+</body>
+</html>
